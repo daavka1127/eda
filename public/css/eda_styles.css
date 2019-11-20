@@ -1,0 +1,17 @@
+.fore-red{
+  color:red;
+}
+
+.search-title{
+  color:red;
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.centerImage {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%;
+}
