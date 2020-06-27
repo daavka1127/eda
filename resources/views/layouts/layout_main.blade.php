@@ -84,17 +84,18 @@
                       <li><a href="{{url('/punishments')}}">Шийтгэл</a></li>
                     </ul>
                   </li>
-                  <li><a href="{{url('/trainings')}}"><i class="fa fa-globe"></i> Сургууль, дамжааны лавлах <span class="fa fa-chevron-down"></span></a></li>
-                  <li><a><i class="fa fa-home"></i> Нэмэлт, засвар хийх <span class="fa fa-chevron-down"></span></a>
+                  <li><a href="{{url('/trainings')}}"><i class="fa fa-book"></i> Сургууль, дамжааны лавлах <span class="fa fa-chevron-down"></span></a></li>
+                  <li><a><i class="fa fa-gear"></i> Нэмэлт, засвар хийх <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
                       <li><a href="{{url('/ajillagaa')}}">Ажиллагаа нэмэх</a></li>
                       <li><a href="{{url('/sectors')}}">Цэргийн багийн салбар, нэгж нэмэх</a></li>
                       <li><a href="{{url('/units')}}">Анги байгууллага нэмэх</a></li>
                     </ul>
                   </li>
-                  <li><a><i class="fa fa-file-archive-o"></i> Файл оруулах <span class="fa fa-chevron-down"></span></a>
+                  <li><a><i class="fa fa-file-excel-o"></i> Excel файл <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
-                      <li><a href="{{url('/upload/pdf')}}">PDF файл оруулах</a></li>
+                      {{-- <li><a href="{{url('/upload/pdf')}}">PDF файл оруулах</a></li> --}}
+                      <li><a href="{{url('/download/excel')}}">Excel файлын толгой татаж авах</a></li>
                       <li><a href="{{url('/import/excel')}}">Excel файл оруулах</a></li>
                     </ul>
                   </li>

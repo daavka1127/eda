@@ -30,6 +30,13 @@
                 <option value="ЗХЖШ">ЗХЖШ</option>
                 <option value="ХЗЦ">ХЗЦ</option>
                 <option value="АЦК">АЦК</option>
+				<option value="ЦЕГ">ЦЕГ</option>
+				<option value="ШШГЕГ">ШШГЕГ</option>
+				<option value="ХХЕГ">ХХЕГ</option>
+				<option value="ОБЕГ">ОБЕГ</option>
+				<option value="ТЕГ">ТЕГ</option>
+				<option value="ДЦ">ДЦ</option>
+				<option value="Бусад">Бусад</option>
               </select>
             </div>
           </div>

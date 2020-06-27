@@ -127,6 +127,7 @@ Route::post('/upload/pdf', 'pdfUploadController@savePdf');
 
 Route::get('/import/excel', 'excelController@showExcel');
 Route::post('/import/excel', 'excelController@importExcel');
+Route::get('/download/excel', 'excelController@downloadExcel');
 
 
 Route::get('/trainings', 'trainingController@index');

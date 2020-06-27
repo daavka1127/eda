@@ -55,7 +55,7 @@ class missionController extends Controller
             $mission->RD = $req->rd;
             $mission->country = $req->country;
             $mission->eelj = $req->eelj;
-            $mission->sector = $req->sector;
+            // $mission->sector = $req->sector;
             $mission->rankType = $req->rankType;
             $mission->rank = $req->rank;
             $mission->operationRank = $req->operationRank;
@@ -92,7 +92,7 @@ class missionController extends Controller
             $mission->RD = $req->rd;
             $mission->country = $req->country;
             $mission->eelj = $req->eelj;
-            $mission->sector = $req->sector;
+            // $mission->sector = $req->sector;
             $mission->rankType = $req->rankType;
             $mission->rank = $req->rank;
             $mission->operationRank = $req->operationRank;

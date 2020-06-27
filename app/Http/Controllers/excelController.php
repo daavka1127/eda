@@ -7,6 +7,7 @@ use DB;
 use App\Imports\EmpMissionImport;
 use Maatwebsite\Excel\Facades\Excel;
 use App\rank;
+use Response;
 
 class excelController extends Controller
 {
@@ -26,5 +27,14 @@ class excelController extends Controller
         $countries = DB::table('tbcountry')->get();
         return view('excelImport.importExcel', compact('errors', 'countries'));
 
+    }
+
+    public function downloadExcel(){
+      $file = public_path() . "/excel_tolgoi.xlsx";
+      $headers = array(
+              'Content-Type: application/xlsx',
+            );
+
+      return Response::download($file, 'excel_tolgoi.xlsx', $headers);
     }
 }
