@@ -35,7 +35,6 @@ function readmoreMisstionByEmp(register){
             { data: "id", name: "id" },
             { data: "countryName", name: "countryName" },
             { data: "eelj", name: "eelj" },
-            { data: "sectorName", name: "sectorName" },
             { data: "RankName", name: "RankName" },
             { data: "operationRank", name: "operationRank" },
             { data: "date", name: "date" },

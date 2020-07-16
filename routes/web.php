@@ -21,7 +21,7 @@ Route::get('/android/test', 'HomeController@testAndroidJson');
 // });
 
 
-Route::get('/testing/dadaa', 'testingController@test');
+Route::get('/testing/dadaa', 'employeeController@getEmptyRD');
 Route::get('/testing/dadaa1', 'testingController@test1');
 Route::get('/testing1/sda', 'testingController@testing1Sda');
 Route::get('/sda/getSspClass', 'testingController@sdaSSP');

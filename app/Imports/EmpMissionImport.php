@@ -14,11 +14,13 @@ use App\Http\Controllers\missionController;
 class EmpMissionImport implements ToCollection
 {
     public $country=null, $eelj=null, $rankID1=null;
+    private $employee;
 
     public function __construct($country, $eelj)
     {
         $this->country = $country;
         $this->eelj = $eelj;
+        $this->employee = new employeeController();
     }
     /**
     * @param Collection $collection
@@ -34,19 +36,19 @@ class EmpMissionImport implements ToCollection
         $sectorID ="";
         foreach ($rows as $row) {
             if($i>0){
-                if(EmpMissionImport::checkUnit($row[4]) == 0){
-                    $tailbar="Ангийн нэр зөрж байна.";
-                }
-                else{
-                  $unitID = EmpMissionImport::checkUnit($row[4]);
-                }
+                // if(EmpMissionImport::checkUnit($row[4]) == 0){
+                //     $tailbar="Ангийн нэр зөрж байна.";
+                // }
+                // else{
+                //   $unitID = EmpMissionImport::checkUnit($row[4]);
+                // }
 
-                if(EmpMissionImport::checkSector($this->country, $row[6]) == 0){
-                    $tailbar = "Салбарын нэр зөрж байна.";
-                }
-                else{
-                  $sectorID = EmpMissionImport::checkSector($this->country, $row[6]);
-                }
+                // if(EmpMissionImport::checkSector($this->country, $row[6]) == 0){
+                //     $tailbar = "Салбарын нэр зөрж байна.";
+                // }
+                // else{
+                //   $sectorID = EmpMissionImport::checkSector($this->country, $row[6]);
+                // }
 
                 if(EmpMissionImport::checkRank($row[7]) == 0){
                     $tailbar = "Цолны нэр зөрж байна.";
@@ -56,24 +58,59 @@ class EmpMissionImport implements ToCollection
                     $rankType = EmpMissionImport::getRankNum($row[7]);
                 }
                 if($tailbar == ""){
+                  // $rd = $row[0];
                   $rd = $row[0];
+                  if($row[0] == ''){
+                      // $emp1 = new employee;
+                      $rd = $this->employee->getEmptyRD();
+                  }
                     $emps = DB::table("tbemployee")
                         ->where('tbemployee.RD', '=', $rd)
                         ->get();
-                    if(count($emps) == 0){
-                        employeeController::storeFromExcel($row[0], $row[1], $row[2], $row[3], $unitID, $row[5]);
+                    $empsCheck = DB::table('tbemployee')
+                        ->where('lastName', '=', $row[1])
+                        ->where('firstname', '=', $row[2])
+                        ->where('sex', '=', $row[3])
+                        ->where('unit', '=', $row[4])
+                        ->where('rank', '=', $row[5])
+                        ->get();
+                    if(count($empsCheck) > 0 && $row[0] == ''){
+
+                    }
+                    else if($row[0] != ''){
+                      if(count($emps) == 0){
+                          employeeController::storeFromExcel($rd, $row[1], $row[2], $row[3], $row[4], $row[5]);
+                      }
+                      else{
+                          employeeController::updateFromExcel($rd, $row[1], $row[2], $row[3], $row[4], $row[5]);
+                      }
+                      $missions = DB::table("tbmission")
+                          ->where('tbmission.RD', '=', $rd)
+                          ->where('tbmission.country', $this->country)
+                          ->where('tbmission.eelj', $this->eelj)
+                          ->get();
+                      if(count($missions) == 0){
+                          missionController::storeFromExcel($rd, $this->country, $this->eelj, $sectorID, $rankType, $rankID, $row[8]);
+                      }
                     }
                     else{
-                        employeeController::updateFromExcel($row[0], $row[1], $row[2], $row[3], $unitID, $row[5]);
+                      if(count($emps) == 0){
+                          employeeController::storeFromExcel($rd, $row[1], $row[2], $row[3], $row[4], $row[5]);
+                      }
+                      else{
+                          employeeController::updateFromExcel($rd, $row[1], $row[2], $row[3], $row[4], $row[5]);
+                      }
+                      $missions = DB::table("tbmission")
+                          ->where('tbmission.RD', '=', $rd)
+                          ->where('tbmission.country', $this->country)
+                          ->where('tbmission.eelj', $this->eelj)
+                          ->get();
+                      if(count($missions) == 0){
+                          missionController::storeFromExcel($rd, $this->country, $this->eelj, $sectorID, $rankType, $rankID, $row[8]);
+                      }
                     }
-                    $missions = DB::table("tbmission")
-                        ->where('tbmission.RD', '=', $rd)
-                        ->where('tbmission.country', $this->country)
-                        ->where('tbmission.eelj', $this->eelj)
-                        ->get();
-                    if(count($missions) == 0){
-                        missionController::storeFromExcel($row[0], $this->country, $this->eelj, $sectorID, $rankType, $rankID, $row[8]);
-                    }
+
+
                 }
                 else{
                   $excel = new errorExcel;

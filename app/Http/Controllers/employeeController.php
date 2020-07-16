@@ -74,10 +74,17 @@ class employeeController extends Controller
         return $emp->count();
     }
 
+    public function getEmptyRD(){
+        $emptyRD = DB::table('tbemployee')
+            ->select(DB::Raw('IFNULL(max(RD), 0) as count'))
+            ->whereRaw('LENGTH(RD) < 10')
+            ->first();
+        return $emptyRD->count + 1;
+    }
+
     public function getEmpByRD(Request $req){
         $emp = DB::table('tbemployee')
-            ->join('tbunit', 'tbemployee.unit', '=', 'tbunit.id')
-            ->select('tbemployee.*', 'tbunit.unit as unitNumber')
+            ->select('tbemployee.*')
             ->where('RD', '=', $req->register)
             ->get();
         return Response::json($emp);

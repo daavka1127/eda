@@ -28,12 +28,7 @@
           </div>
           <div class="form-group col-xs-10 col-sm-4 col-md-4 col-lg-3">
               <label for="">Анги: </label>
-              <select class="form-control" id="cmbEditUnit" name="cmbEditUnit">
-                <option value="-1">Сонгоно уу</option>
-                @foreach($units as $unit)
-                  <option value="{{$unit->id}}">{{$unit->unit}}</option>
-                @endforeach
-              </select>
+              <input type="text" class="form-control" id="cmbEditUnit" name="cmbEditUnit" />
           </div>
           <div class="form-group col-xs-10 col-sm-4 col-md-4 col-lg-6">
               <label for="">Албан тушаал: </label>
@@ -76,12 +71,12 @@
               </select>
           </div>
           <div class="clearfix"></div>
-          <div class="form-group col-xs-10 col-sm-4 col-md-4 col-lg-3">
+          {{-- <div class="form-group col-xs-10 col-sm-4 col-md-4 col-lg-3">
               <label for="">Салбар: </label>
               <select class="form-control" id="cmbEditSector" name="cmbEditSector">
                 <option value="-1">Сонгоно уу</option>
               </select>
-          </div>
+          </div> --}}
           <div class="form-group col-xs-10 col-sm-4 col-md-4 col-lg-6">
               <label for="">Ажиллагааны албан тушаал: </label>
               <input type="text" id="txtEditOperationRank" class="form-control">

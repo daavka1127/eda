@@ -104,9 +104,10 @@ $(document).ready(function(){
                 data: {_token: csrf, register:$("#txtNewRegister").val()},
                 success:function(response){
                     if(response.length > 0){
+                        alert('angi n ' + response[0].unit);
                         $('#txtNewLastname').val(response[0].lastName);
                         $('#txtNewFirstname').val(response[0].firstname);
-                        $("select[name='cmbNewUnit']").val(response[0].unit);
+                        $("#cmbNewUnit").val(response[0].unit);
                         $('#txtNewRank').val(response[0].rank);
                         $('#hideInsertOrUpdate').val("0");
                         // $('#txtNewLastname').prop('disabled','disabled');
@@ -123,7 +124,7 @@ $(document).ready(function(){
 
                         $('#txtNewLastname').val('');
                         $('#txtNewFirstname').val('');
-                        $("select[name='cmbNewUnit']").val('-1');
+                        $("#cmbNewUnit").val('');
                         $('#txtNewRank').val('');
                     }
                 }
@@ -132,7 +133,7 @@ $(document).ready(function(){
         else{
           $('#txtNewLastname').val('');
           $('#txtNewFirstname').val('');
-          $("select[name='cmbNewUnit']").val('-1');
+          $("#cmbNewUnit").val('');
           $('#txtNewRank').val('');
           $("#newSex").html("Хүйс: ");
         }
@@ -144,10 +145,6 @@ $(document).ready(function(){
 $(document).ready(function(){
     $("#btnNewEmpMission").click(function(){
         var isInsert = true;
-        if($("#txtNewRegister").val() == ""){
-            alertify.error('Регистрийн дугаар хоосон байна!!!');
-            isInsert = false;
-        }
         if($("#hideIsInsertMission").val() == "0"){
             isInsert = false;
         }
@@ -159,7 +156,7 @@ $(document).ready(function(){
             alertify.error('Нэр хоосон байна!!!');
             isInsert = false;
         }
-        if($("#cmbNewUnit").val() == "-1"){
+        if($("#cmbNewUnit").val() == ""){
             alertify.error('Албан хаагчийн ангиа сонгоно уу!!!');
             isInsert = false;
         }
@@ -223,7 +220,7 @@ $(document).ready(function(){
               $("#txtNewRegister").val('');
               $('#txtNewLastname').val('');
               $('#txtNewFirstname').val('');
-              $("select[name='cmbNewUnit']").val('-1');
+              $("#cmbNewUnit").val('');
               $('#txtNewRank').val('');
 
               $('#cmbNewCountry').val("-1");
@@ -284,7 +281,10 @@ function checkMissionEmp(){
         });
     }
     else{
-      $("#hideIsInsertMission").val('0');
+        $("#hideIsInsertMission").val('0');
+    }
+    if($("#txtNewRegister").val() == ''){
+        $("#hideIsInsertMission").val('1');
     }
 }
 
@@ -345,7 +345,7 @@ function refresh(){
           { data: "id", name: "id" },
           { data: "countryName", name: "countryName" },
           { data: "eelj", name: "eelj" },
-          { data: "sectorName", name: "sectorName" },
+          // { data: "sectorName", name: "sectorName" },
           { data: "RD", name: "RD" },
           { data: "lastName", name: "lastName" },
           { data: "firstname", name: "firstname" },

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use DB;
 use App\mission;
 use App\employee;
+use App\Http\Controllers\employeeController;
 use Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Input;
@@ -13,8 +14,10 @@ use Yajra\DataTables\DataTables;
 
 class missionController extends Controller
 {
+    private $employee;
     public function __construct()
     {
+        $this->employee = new employeeController();
         $this->middleware('auth');
     }
 
@@ -30,11 +33,16 @@ class missionController extends Controller
     }
 
     public function store(Request $req){
-        try{
+        // try{
+            $rd = $req->rd;
+            if($req->rd == ''){
+                // $emp1 = new employee;
+                $rd = $this->employee->getEmptyRD();
+            }
             if($req->inserOrUpdate == "1")
             {
                 $emp = new employee;
-                $emp->RD = $req->rd;
+                $emp->RD = $rd;
                 $emp->lastName = $req->lastName;
                 $emp->firstname = $req->firstname;
                 $sexNumber = substr($req->rd, 10, 1);
@@ -51,8 +59,10 @@ class missionController extends Controller
                 $emp->save();
             }
 
+
+
             $mission = new mission;
-            $mission->RD = $req->rd;
+            $mission->RD = $rd;
             $mission->country = $req->country;
             $mission->eelj = $req->eelj;
             // $mission->sector = $req->sector;
@@ -64,15 +74,21 @@ class missionController extends Controller
             $mission->save();
 
             return "Амжилттай хадгаллаа";
-        } catch(\Exception $e){
-          return "Алдаа гарлаа!!!";
-        }
+        // } catch(\Exception $e){
+        //   return "Алдаа гарлаа!!!";
+        // }
     }
 
     public function update(Request $req){
         try{
+            $rd = $req->rd;
+            if($req->rd == ''){
+                // $emp1 = new employee;
+                $rd = $this->employee->getEmptyRD();
+            }
+            // return $rd;
             $emp = employee::find($req->old_rd);
-            $emp->RD = $req->rd;
+            $emp->RD = $rd;
             $emp->lastName = $req->lastName;
             $emp->firstname = $req->firstname;
             $sexNumber = substr($req->rd, 10, 1);
@@ -89,7 +105,7 @@ class missionController extends Controller
             $emp->save();
 
             $mission = mission::find($req->id);
-            $mission->RD = $req->rd;
+            $mission->RD = $rd;
             $mission->country = $req->country;
             $mission->eelj = $req->eelj;
             // $mission->sector = $req->sector;
@@ -108,7 +124,7 @@ class missionController extends Controller
         $mission->RD = $RD;
         $mission->country = $country;
         $mission->eelj = $eelj;
-        $mission->sector = $sector;
+        // $mission->sector = $sector;
         $mission->rankType = $rankType;
         $mission->rank = $rank;
         $mission->operationRank = $operationRank;
@@ -141,14 +157,13 @@ class missionController extends Controller
     public function getEmpMission(Request $req){
         $emps = DB::table('tbmission')
             ->join('tbemployee', 'tbmission.RD', '=', 'tbemployee.RD')
-            ->join('tbunit', 'tbemployee.unit', '=', 'tbunit.id')
             ->join('tbranktype', 'tbmission.rankType', '=', 'tbranktype.rankTypeID')
             ->join('tbrank', 'tbmission.rank', '=', 'tbrank.rankID')
             ->join('users', 'tbmission.admin', '=', 'users.id')
             ->join('tbcountry', 'tbmission.country', '=', 'tbcountry.id')
-            ->join('tbsector', 'tbmission.sector', '=', 'tbsector.id')
+            // ->join('tbsector', 'tbmission.sector', '=', 'tbsector.id')
             ->select('tbmission.*', 'tbmission.rank as rankCode', 'tbemployee.lastName', 'tbemployee.firstname', 'tbemployee.rank', 'tbemployee.unit as unitID',
-            'tbunit.unit', 'users.name', 'tbrank.RankName', 'tbcountry.countryName', 'tbsector.sectorName',
+            'tbemployee.unit', 'users.name', 'tbrank.RankName', 'tbcountry.countryName',
             DB::raw('(select COUNT(*) FROM tbmission as t1 WHERE t1.RD = tbmission.RD) as countOp'))
             ->where('tbmission.country', '=', $req->country)
             ->where('tbmission.eelj', '=', $req->eelj)
@@ -167,9 +182,9 @@ class missionController extends Controller
             ->join('tbrank', 'tbmission.rank', '=', 'tbrank.rankID')
             ->join('users', 'tbmission.admin', '=', 'users.id')
             ->join('tbcountry', 'tbmission.country', '=', 'tbcountry.id')
-            ->join('tbsector', 'tbmission.sector', '=', 'tbsector.id')
+            // ->join('tbsector', 'tbmission.sector', '=', 'tbsector.id')
             ->select('tbmission.*', 'tbmission.rank as rankCode', 'users.name', 'tbrank.RankName',
-            'tbcountry.countryName', 'tbsector.sectorName')
+            'tbcountry.countryName')
             ->where('tbmission.RD', '=', $req->rd)
             ->get();
         return DataTables::of($missions)

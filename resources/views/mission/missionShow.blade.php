@@ -42,7 +42,7 @@
             { data: "id", name: "id" },
             { data: "countryName", name: "countryName" },
             { data: "eelj", name: "eelj" },
-            { data: "sectorName", name: "sectorName" },
+            // { data: "sectorName", name: "sectorName" },
             { data: "RD", name: "RD" },
             { data: "lastName", name: "lastName" },
             { data: "firstname", name: "firstname" },
@@ -129,7 +129,7 @@ $(document).ready(function(){
             <th>ID</th>
             <th>Ажиллагааны улс</th>
             <th>Ээлж</th>
-            <th>Салбар</th>
+            {{-- <th>Салбар</th> --}}
             <th>Регистрийн дугаар</th>
             <th>Овог</th>
             <th>Нэр</th>

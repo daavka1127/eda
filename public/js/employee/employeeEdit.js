@@ -39,7 +39,7 @@ $(document).ready(function(){
                     if(response.length > 0){
                         $('#txtEditLastname').val(response[0].lastName);
                         $('#txtEditFirstname').val(response[0].firstname);
-                        $("select[name='cmbEditUnit']").val(response[0].unit);
+                        $("#cmbEditUnit").val(response[0].unit);
                         $('#txtEditRank').val(response[0].rank);
                         $('#hideInsertOrUpdate').val("0");
                     }
@@ -48,7 +48,7 @@ $(document).ready(function(){
 
                         $('#txtEditLastname').val('');
                         $('#txtEditFirstname').val('');
-                        $("select[name='cmbEditUnit']").val('-1');
+                        $("#cmbEditUnit").val('');
                         $('#txtEditRank').val('');
                     }
                 }
@@ -115,7 +115,7 @@ $(document).ready(function(){
                     if(response.length > 0){
                         $('#txtEditLastname').val(response[0].lastName);
                         $('#txtEditFirstname').val(response[0].firstname);
-                        $("select[name='cmbEditUnit']").val(response[0].unit);
+                        $("#cmbEditUnit").val(response[0].unit);
                         $('#txtEditRank').val(response[0].rank);
                         $('#hideInsertOrUpdate').val("0");
                     }
@@ -124,7 +124,7 @@ $(document).ready(function(){
 
                         $('#txtEditLastname').val('');
                         $('#txtEditFirstname').val('');
-                        $("select[name='cmbEditUnit']").val('-1');
+                        $("#cmbEditUnit").val('');
                         $('#txtEditRank').val('');
                     }
                 }
@@ -214,10 +214,6 @@ $(document).ready(function(){
 $(document).ready(function(){
     $("#btnEditEmpMissionPost").click(function(){
         var isUpdate = true;
-        if($("#txtEditRegister").val() == ""){
-            alertify.error('Регистрийн дугаар хоосон байна!!!');
-            isUpdate = false;
-        }
         if($("#txtEditLastname").val() == ""){
             alertify.error('Овог хоосан байна!!!');
             isUpdate = false;
@@ -226,7 +222,7 @@ $(document).ready(function(){
             alertify.error('Нэр хоосон байна!!!');
             isUpdate = false;
         }
-        if($("#cmbEditUnit").val() == "-1"){
+        if($("#cmbEditUnit").val() == ""){
             alertify.error('Албан хаагчийн ангиа сонгоно уу!!!');
             isUpdate = false;
         }
@@ -277,6 +273,7 @@ $(document).ready(function(){
                 }
                 else{
                   alertify.alert(data);
+                  $("#editEmpMission").modal('hide');
                   refresh();
                 }
               },
