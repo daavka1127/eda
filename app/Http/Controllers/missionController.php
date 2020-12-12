@@ -36,10 +36,18 @@ class missionController extends Controller
         // try{
             $rd = $req->rd;
             if($req->rd == ''){
-                // $emp1 = new employee;
                 $rd = $this->employee->getEmptyRD();
             }
-            if($req->inserOrUpdate == "1")
+
+            $insert = true;
+            $emp = employee::where('RD', $rd);
+            $emp = DB::table('tbemployee')->where('RD', '=', $rd)->get();
+
+            if(count($emp) > 0){
+                $insert = false;
+            }
+
+            if($insert)
             {
                 $emp = new employee;
                 $emp->RD = $rd;
@@ -49,8 +57,11 @@ class missionController extends Controller
                 if(($sexNumber%2) == 1){
                     $emp->sex = "эр";
                 }
-                else{
+                if(($sexNumber%2) == 2){
                     $emp->sex = "эм";
+                }
+                else{
+                    $emp->sex = "";
                 }
                 $emp->unit = $req->unit;
                 $emp->rank = $req->rankAlbanTushaal;
@@ -65,8 +76,6 @@ class missionController extends Controller
             $mission->RD = $rd;
             $mission->country = $req->country;
             $mission->eelj = $req->eelj;
-            // $mission->sector = $req->sector;
-            $mission->rankType = $req->rankType;
             $mission->rank = $req->rank;
             $mission->operationRank = $req->operationRank;
             $mission->date = date("Y/m/d h:i:s");
@@ -80,32 +89,107 @@ class missionController extends Controller
     }
 
     public function update(Request $req){
-        try{
+        // try{
             $rd = $req->rd;
             if($req->rd == ''){
-                // $emp1 = new employee;
-                $rd = $this->employee->getEmptyRD();
+                $msg = array(
+                   'status' => 'rdError',
+                   'msg' => 'Регистрийн дугаар хоосон байна!!!'
+                );
+                return $msg;
             }
-            // return $rd;
-            $emp = employee::find($req->old_rd);
-            $emp->RD = $rd;
-            $emp->lastName = $req->lastName;
-            $emp->firstname = $req->firstname;
-            $sexNumber = substr($req->rd, 10, 1);
-            if(($sexNumber%2) == 1){
-                $emp->sex = "эр";
-            }
-            else{
-                $emp->sex = "эм";
-            }
-            $emp->unit = $req->unit;
-            $emp->rank = $req->rankAlbanTushaal;
-            $emp->date = date("Y/m/d h:i:s");
-            $emp->admin = Auth::user()->id;
-            $emp->save();
 
-            $mission = mission::find($req->id);
-            $mission->RD = $rd;
+            // return $req->old_rd;
+            $checkedUser = employee::where('RD', '=', $req->rd)->get();
+            // $checkedUserOld = employee::where('RD', '=', $req->old_rd)->get();
+            if(count($checkedUser) == 0){
+                if($req->rd != $req->old_rd){
+                    $nrd = DB::delete('DELETE FROM tbemployee WHERE RD = "' . $req->old_rd . '"');
+                }
+                $emp = DB::table('tbemployee')
+                    ->where('RD', '=', $req->old_rd);
+                    $sexNumber = substr($req->rd, 10, 1);
+                    if(($sexNumber%2) == 1){
+                        $sex = "эр";
+                    }
+                    else if(($sexNumber%2) == 0){
+                        $sex = "эм";
+                    }
+                    else{
+                        $sex = "";
+                    }
+                $emp = new employee;
+                $emp->RD = $req->rd;
+                $emp->lastName = $req->lastName;
+                $emp->firstname = $req->firstname;
+                $sexNumber = substr($req->rd, 10, 1);
+                if(($sexNumber%2) == 1){
+                    $emp->sex = "эр";
+                }
+                else if(($sexNumber%2) == 0){
+                    $emp->sex = "эм";
+                }
+                else{
+                    $emp->sex = "";
+                }
+                $emp->unit = $req->unit;
+                $emp->rank = $req->rankAlbanTushaal;
+                $emp->date = date("Y/m/d h:i:s");
+                $emp->admin = Auth::user()->id;
+                $emp->save();
+                // $emp = DB::table('tbemployee')
+                //     ->where('RD', '=', $req->old_rd)
+
+                // $emp = employee::where('RD', '=', $req->old_rd)
+                //     ->update([
+                //       'RD' => $req->rd,
+                //       'lastName' => $req->lastName,
+                //       'firstname' => $req->firstname,
+                //       'sex' => $sex,
+                //       'unit' => $req->unit,
+                //       'rank' => $req->rankAlbanTushaal,
+                //       'date' => date("Y/m/d h:i:s"),
+                //       'admin' => Auth::user()->id
+                //     ]);
+            }
+            // else if(count($checkedUser) == 0 && )
+            else{
+                // $emp = employee::find($req->old_rd);
+                // $emp->delete();
+                if($req->rd != $req->old_rd){
+                    $nrd = DB::delete('DELETE FROM tbemployee WHERE RD = "' . $req->old_rd . '"');
+                }
+
+                $emp = employee::find($req->rd);
+
+                $emp->RD = $req->rd;
+                $emp->lastName = $req->lastName;
+                $emp->firstname = $req->firstname;
+                $sexNumber = substr($req->rd, 10, 1);
+                if(($sexNumber%2) == 1){
+                    $emp->sex = "эр";
+                }
+                else if(($sexNumber%2) == 0){
+                    $emp->sex = "эм";
+                }
+                else{
+                    $emp->sex = "";
+                }
+                $emp->unit = $req->unit;
+                $emp->rank = $req->rankAlbanTushaal;
+                $emp->date = date("Y/m/d h:i:s");
+                $emp->admin = Auth::user()->id;
+                $emp->save();
+            }
+
+
+
+
+            if($req->rd != $req->old_rd){
+                $mission = mission::where('RD', '=', $req->old_rd)->update(['RD' => $req->rd]);
+            }
+
+            $mission = mission::find($req->hideMissionId);
             $mission->country = $req->country;
             $mission->eelj = $req->eelj;
             // $mission->sector = $req->sector;
@@ -115,17 +199,28 @@ class missionController extends Controller
             $mission->date = date("Y/m/d h:i:s");
             $mission->admin = Auth::user()->id;
             $mission->save();
-            return "Амжилттай заслаа";
-        }catch(\Excaption $e){return "00";}
+
+             $msg = array(
+                'status' => 'success',
+                'msg' => 'Амжилттай хадгаллаа!!!'
+             );
+            return $msg;
+        // }catch(\Exception $e){
+        //     $msg = array(
+        //        'status' => 'error',
+        //        'msg' => 'Серверийн алдаа гарлаа. Веб мастерт хандана уу!!!'
+        //     );
+        //     return $msg;
+        // }
     }
 
-    public static function storeFromExcel($RD, $country, $eelj, $sector, $rankType, $rank, $operationRank){
+    public static function storeFromExcel($RD, $country, $eelj, $rank, $operationRank){
         $mission = new mission;
         $mission->RD = $RD;
         $mission->country = $country;
         $mission->eelj = $eelj;
         // $mission->sector = $sector;
-        $mission->rankType = $rankType;
+        // $mission->rankType = $rankType;
         $mission->rank = $rank;
         $mission->operationRank = $operationRank;
         $mission->date = date("Y/m/d h:i:s");
@@ -133,7 +228,7 @@ class missionController extends Controller
         $mission->save();
     }
 
-    public static function updateFromExcel($RD, $country, $eelj, $sector, $rankType, $rank, $operationRank){
+    public static function updateFromExcel($RD, $country, $eelj, $rank, $operationRank){
         $mission = mission::where('RD', $RD)->where('country', $country)->where('eelj', $eelj);
         $mission->country = $country;
         $mission->eelj = $eelj;
@@ -157,13 +252,11 @@ class missionController extends Controller
     public function getEmpMission(Request $req){
         $emps = DB::table('tbmission')
             ->join('tbemployee', 'tbmission.RD', '=', 'tbemployee.RD')
-            ->join('tbranktype', 'tbmission.rankType', '=', 'tbranktype.rankTypeID')
-            ->join('tbrank', 'tbmission.rank', '=', 'tbrank.rankID')
             ->join('users', 'tbmission.admin', '=', 'users.id')
             ->join('tbcountry', 'tbmission.country', '=', 'tbcountry.id')
             // ->join('tbsector', 'tbmission.sector', '=', 'tbsector.id')
             ->select('tbmission.*', 'tbmission.rank as rankCode', 'tbemployee.lastName', 'tbemployee.firstname', 'tbemployee.rank', 'tbemployee.unit as unitID',
-            'tbemployee.unit', 'users.name', 'tbrank.RankName', 'tbcountry.countryName',
+            'tbemployee.unit', 'users.name', 'tbcountry.countryName',
             DB::raw('(select COUNT(*) FROM tbmission as t1 WHERE t1.RD = tbmission.RD) as countOp'))
             ->where('tbmission.country', '=', $req->country)
             ->where('tbmission.eelj', '=', $req->eelj)
@@ -178,12 +271,10 @@ class missionController extends Controller
 
     public function getMissionByRD(Request $req){
         $missions = DB::table('tbmission')
-            ->join('tbranktype', 'tbmission.rankType', '=', 'tbranktype.rankTypeID')
-            ->join('tbrank', 'tbmission.rank', '=', 'tbrank.rankID')
             ->join('users', 'tbmission.admin', '=', 'users.id')
             ->join('tbcountry', 'tbmission.country', '=', 'tbcountry.id')
             // ->join('tbsector', 'tbmission.sector', '=', 'tbsector.id')
-            ->select('tbmission.*', 'tbmission.rank as rankCode', 'users.name', 'tbrank.RankName',
+            ->select('tbmission.*', 'tbmission.rank as rankCode', 'users.name',
             'tbcountry.countryName')
             ->where('tbmission.RD', '=', $req->rd)
             ->get();
@@ -198,6 +289,26 @@ class missionController extends Controller
             ->where('tbmission.eelj', '=', $req->eelj)
             ->count();
         return $missionEmp;
+    }
+
+    public function deleteEmpByEelj(Request $req){
+        try{
+            $missionEmp = DB::table('tbmission')
+                ->where('country', '=', $req->countryID)
+                ->where('eelj', '=', $req->eelj);
+            $missionEmp->delete();
+            $array = array(
+                'status' => 'success',
+                'msg' => 'Амжилттай устгалаа!!!'
+            );
+            return $array;
+        }catch(\Exception $e){
+            $array = array(
+                'status' => 'error',
+                'msg' => 'Серверийн алдаа!!! Веб мастерт хандана уу!!!'
+            );
+            return $array;
+        }
     }
 
 

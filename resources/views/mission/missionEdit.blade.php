@@ -56,19 +56,8 @@
               </select>
           </div>
           <div class="form-group col-xs-10 col-sm-4 col-md-4 col-lg-3">
-            <label for="">Ажиллагааны цол: </label>
-            <select class="form-control" id="cmbEditRankType">
-              <option value="-1">Сонгоно уу</option>
-              @foreach($rankTypes as $rankType)
-                <option value="{{$rankType->rankTypeID}}">{{$rankType->TypeName}}</option>
-              @endforeach
-            </select>
-          </div>
-          <div class="form-group col-xs-10 col-sm-4 col-md-4 col-lg-3">
               <label for="">Ажиллагааны цол: </label>
-              <select class="form-control" id="cmbEditRank" name = "cmbEditRank">
-                <option value="-1">Сонгоно уу</option>
-              </select>
+              <input type="text" class="form-control" id="cmbEditRank" name = "cmbEditRank" />
           </div>
           <div class="clearfix"></div>
           {{-- <div class="form-group col-xs-10 col-sm-4 col-md-4 col-lg-3">

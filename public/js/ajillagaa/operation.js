@@ -1,83 +1,49 @@
-var checkOperationNew = false;
-
-function editOperation(id, countryID, eelj, leaveDate, arriveDate){
-    $('option[value=' + countryID + ']')
-           .attr('selected',true);
-     $("#txtEditEelj").val(eelj);
-     $("#single_cal3").val(leaveDate);
-     $("#single_cal4").val(arriveDate);
-     $("#opirationID").val(id);
-     $("#editOperation").modal('show');
-}
-
 $(document).ready(function(){
-    $("#cmbCountryName").change(function(){
-      if($("#cmbCountryName").val() != -1 && $("#txtNewEelj").val() != ""){
-        var csrf = $('meta[name=csrf-token]').attr("content");
-        checkOperation(csrf, $("#cmbCountryName").val(), $("#txtNewEelj").val());
-      }
-    });
-    $("#txtNewEelj").keyup(function(){
-      if($("#cmbCountryName").val() != -1 && $("#txtNewEelj").val() != ""){
-        var csrf = $('meta[name=csrf-token]').attr("content");
-        checkOperation(csrf, $("#cmbCountryName").val(), $("#txtNewEelj").val());
-      }
+    $("#cmbCountry").change(function(){
+        fillOperations();
     });
 });
-
-function checkOperation(csrf, country, eelj){
-    $("#error_message").empty();
-    $("#error_message").append('<img width="30" src="' + loading_smallImageUrl + '" /> <label class="control-label">Уншиж байна...</label>');
-    $.ajax({
-      type:'POST',
-      url:checkOperationInsert,
-      data:{_token: csrf, country: country, eelj: eelj},
-      success:function(data){
-          if(data > 0){
-            checkOperationNew = false;
-            $("#error_message").empty();
-            $("#error_message").append('<img width="30" src="' + wrongImageUrl + '" /> <label class="control-label">Бүртгэлтэй байна</label>');
-          }
-          else{
-            checkOperationNew = true;
-            $("#error_message").empty();
-            $("#error_message").append('<img width="30" src="' + correctImageUrl + '" /> <label class="control-label">Боломжтой байна</label>');
-          }
-      },
-      error: function(XMLHttpRequest, textStatus, errorThrown) {
-          checkOperationNew = false;
-          $("#error_message").empty();
-          $("#error_message").append('<img width="30" src="' + wrongImageUrl + '" /> <label class="control-label">Алдаа гарлаа.</label>');
-      }
-    });
-    return checkOperationNew;
-}
 
 function fillOperations(){
-  $( "#operations" ).empty();
-  $( "#operations" ).append("<img src='" + loadingImageUrl + "'/>");
-  $.ajax({
-    type:'GET',
-    url:showOperationUrl,
-    success:function(data){
-      $( "#operations" ).empty();
-      $("#operations").append(data);
-    },
-    error: function(XMLHttpRequest, textStatus, errorThrown) {
-        alertify.error("Status: " + textStatus); alertify.error("Error: " + errorThrown);
-        $( "#operations" ).empty();
-        $( "#operations" ).append("Сервертэй холбогдоход алдаа гарлаа.");
-    }
+  $('#tableEelj').dataTable().fnDestroy();
+  var table = $('#tableEelj').DataTable( {
+      "language": {
+          "lengthMenu": "_MENU_ мөрөөр харах",
+          "zeroRecords": "Хайлт илэрцгүй байна",
+          "info": "Нийт _PAGES_ -аас _PAGE_-р хуудас харж байна ",
+          "infoEmpty": "Хайлт илэрцгүй",
+          "infoFiltered": "(_MAX_ мөрөөс хайлт хийлээ)",
+          "sSearch": "Хайх: ",
+          "paginate": {
+            "previous": "Өмнөх",
+            "next": "Дараахи"
+          }
+      },
+      "processing": true,
+      "serverSide": true,
+      "order": [[ 3, "asc" ]],
+      // "stateSave": true,
+      "ajax":{
+               "url": getEeljUrlDatatable,
+               "dataType": "json",
+               "type": "post",
+               "data":{
+                    _token: $('meta[name="csrf-token"]').attr('content'),
+                    countryID:$("#cmbCountry").val()
+                  }
+             },
+     "columns": [
+       { data: "id", name: "id",  render: function (data, type, row, meta) {
+           return meta.row + meta.settings._iDisplayStart + 1;
+       }  },
+       { data: "countryID", name: "countryID", "visible":false },
+       { data: "countryName", name: "countryName" },
+       { data: "eelj", name: "eelj" },
+       { data: "leaveDate", name: "leaveDate" },
+       { data: "arriveDate", name: "arriveDate" }
+       ]
   });
 }
-
-$(document).ready(function(){
-  $("#frmNewOperation").keypress(function(e) {
-      if(e.which == 13) {
-          $('#btnNewOperation').click();
-      }
-  });
-});
 
 $(document).ready(function(){
   $("#btnNewOperation").click(function(){
@@ -98,10 +64,6 @@ $(document).ready(function(){
       alertify.error('Ирсэн өдрөө дугаараа оруулна уу!');
       proceed = false;
     }
-    if(checkOperationNew == false){
-      alertify.error('Энэ ээлж бүртгэлтэй байна!');
-      proceed = false;
-    }
     var csrf = $('meta[name=csrf-token]').attr("content");
     if(proceed){
       // var data = $("#frmNewOperation").serialize();
@@ -110,13 +72,21 @@ $(document).ready(function(){
         url:newOperationUrl,
         data:{_token: csrf, country: $("#cmbCountryName").val(), eelj: $("#txtNewEelj").val(), leaveDate: $("#single_cal1").val(), arriveDate: $("#single_cal2").val()},
         success:function(data){
-          alertify.alert(data);
-          fillOperations();
-          $("#cmbCountryName").val(-1);
-          $("#txtNewEelj").val('');
-          $("#single_cal1").val('');
-          $("#single_cal2").val('');
-          $("#error_message").empty();
+            if(data.status == 'success'){
+                alertify.alert(data.msg);
+                fillOperations();
+                $("#cmbCountryName").val(-1);
+                $("#txtNewEelj").val('');
+                $("#single_cal1").val('');
+                $("#single_cal2").val('');
+                $("#error_message").empty();
+            }
+            else if(data.status == 'exist'){
+                alertify.error(data.msg);
+            }
+            else{
+                alertify.error(data.msg);
+            }
         },
         error: function(XMLHttpRequest, textStatus, errorThrown) {
             alertify.error("Status: " + textStatus); alertify.error("Error: " + errorThrown);
@@ -127,13 +97,22 @@ $(document).ready(function(){
 });
 
 
-
 $(document).ready(function(){
-  $("#frmEditOperation").keypress(function(e) {
-      if(e.which == 13) {
-          $('#btnEditOperation').click();
-      }
-  });
+    $("#btnEditEelj").click(function(){
+        if(dataRow == ""){
+            alertify.error("Дээрхи хүснэгтээс засахыг хүссэн ээлжээ сонгоно уу!!!");
+            return;
+        }
+        $('option[value=' + dataRow["countryID"] + ']')
+               .attr('selected',true);
+         $("#txtEditEelj").val(dataRow["eelj"]);
+         var splLeaveDate = dataRow["leaveDate"].split("-");;
+         $("#single_cal3").val(splLeaveDate[1] + "/" + splLeaveDate[2] + "/" + splLeaveDate[0]);
+         var splLeaveDate = dataRow["arriveDate"].split("-");;
+         $("#single_cal4").val(splLeaveDate[1] + "/" + splLeaveDate[2] + "/" + splLeaveDate[0]);
+         $("#opirationID").val(dataRow["id"]);
+         $("#editOperation").modal('show');
+    });
 });
 
 $(document).ready(function(){
@@ -160,15 +139,31 @@ $(document).ready(function(){
       $.ajax({
         type:'POST',
         url:editOperationUrl,
-        data:{_token: csrf, operationID: $('#opirationID').val(), country: $("#cmbEditCountry").val(), eelj: $("#txtEditEelj").val(), leaveDate: $("#single_cal1").val(), arriveDate: $("#single_cal2").val()},
+        data:{
+          _token: csrf,
+          operationID: $('#opirationID').val(),
+          country: $("#cmbEditCountry").val(),
+          eelj: $("#txtEditEelj").val(),
+          leaveDate: $("#single_cal3").val(),
+          arriveDate: $("#single_cal4").val()
+        },
         success:function(data){
-          $("#editOperation").modal('hide');
-          alertify.alert(data);
-          fillOperations();
-          $("#cmbCountryName").val(-1);
-          $("#txtEditEelj").val("");
-          $("#single_cal3").val("");
-          $("#single_cal4").val("");
+
+          if(data.status == 'success'){
+              alertify.alert(data.msg);
+              fillOperations();
+              $("#cmbCountryName").val(-1);
+              $("#txtNewEelj").val('');
+              $("#single_cal3").val('');
+              $("#single_cal4").val('');
+              $("#error_message").empty();
+          }
+          else if(data.status == 'exist'){
+              alertify.error(data.msg);
+          }
+          else{
+              alertify.error(data.msg);
+          }
         },
         error: function(XMLHttpRequest, textStatus, errorThrown) {
             alertify.error("Status: " + textStatus); alertify.error("Error: " + errorThrown);
@@ -179,25 +174,40 @@ $(document).ready(function(){
 });
 
 
+$(document).ready(function(){
+    $("#btnDeleteEelj").click(function(){
+        if(dataRow == ""){
+            alertify.error("Дээрхи хүснэгтээс засахыг хүссэн ээлжээ сонгоно уу!!!");
+            return;
+        }
+        alertify.confirm( "Та устгахдаа итгэлтэй байна уу?", function (e) {
+          if (e) {
+            var csrf = $('meta[name=csrf-token]').attr("content");
+            $.ajax({
+                type: 'POST',
+                url: deleteOperationUrl,
+                data: {_token: csrf, operationID : dataRow["id"]},
+                success:function(data){
+                    if(data.status == 'success'){
+                        alertify.alert(data.msg);
+                        fillOperations();
+                    }
+                    else{
+                        alertify.error(data.msg);
+                    }
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    alertify.error("Status: " + textStatus); alertify.error("Error: " + errorThrown);
+                }
+            })
+          } else {
+              alertify.error('Устгах үйлдэл цуцлагдлаа.');
+          }
+        });
+    });
+});
+
 
 function deleteOperation(id){
-  alertify.confirm( "Та устгахдаа итгэлтэй байна уу?", function (e) {
-    if (e) {
-      var csrf = $('meta[name=csrf-token]').attr("content");
-      $.ajax({
-          type: 'POST',
-          url: deleteOperationUrl,
-          data: {_token: csrf, operationID : id},
-          success:function(data){
-              alertify.alert("Амжилттай устлаа.");
-              fillOperations();
-          },
-          error: function(XMLHttpRequest, textStatus, errorThrown) {
-              alertify.error("Status: " + textStatus); alertify.error("Error: " + errorThrown);
-          }
-      })
-    } else {
-        alertify.error('Устгах үйлдэл цуцлагдлаа.');
-    }
-  });
+
 }

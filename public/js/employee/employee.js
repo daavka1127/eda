@@ -26,7 +26,6 @@ $(document).ready(function(){
 //Ajillagaanii uls songoh uyd eeljin dugaar combog fill hiij bn
 $(document).ready(function(){
     $("#cmbNewCountry").change(function(){
-        checkMissionEmp();
         var csrf = $('meta[name=csrf-token]').attr("content");
         $.ajax({
             type: 'get',
@@ -137,7 +136,6 @@ $(document).ready(function(){
           $('#txtNewRank').val('');
           $("#newSex").html("Хүйс: ");
         }
-      checkMissionEmp();
     });
 });
 
@@ -145,9 +143,6 @@ $(document).ready(function(){
 $(document).ready(function(){
     $("#btnNewEmpMission").click(function(){
         var isInsert = true;
-        if($("#hideIsInsertMission").val() == "0"){
-            isInsert = false;
-        }
         if($("#txtNewLastname").val() == ""){
             alertify.error('Овог хоосон байна!!!');
             isInsert = false;
@@ -160,10 +155,6 @@ $(document).ready(function(){
             alertify.error('Албан хаагчийн ангиа сонгоно уу!!!');
             isInsert = false;
         }
-        if($("#txtNewRank").val() == ""){
-            alertify.error('Ангийн албан тушаал хоосон байна!!!');
-            isInsert = false;
-        }
         if($("#cmbNewCountry").val() == "-1"){
             alertify.error('Ажиллагааны улсаа сонгоно уу!!!');
             isInsert = false;
@@ -172,43 +163,28 @@ $(document).ready(function(){
             alertify.error('Ажиллагааны ээлжээ сонгоно уу!!!');
             isInsert = false;
         }
-        if($("#cmbNewRankType").val() == "-1"){
-            alertify.error('Ажиллагааны цолоо сонгоно уу!!!');
-            isInsert = false;
-        }
-        if($("#cmbNewRank").val() == "-1"){
-            alertify.error('Ажиллагааны цолоо сонгоно уу!!!');
-            isInsert = false;
-        }
-        if($("#cmbNewSector").val() == "-1"){
-            alertify.error('Цэргийн багийн салбараа сонгоно уу!!!');
-            isInsert = false;
-        }
-        if($("#txtNewOperationRank").val() == ""){
-            alertify.error('Ажиллагааны албан тушаал хоосон байна.!!!');
-            isInsert = false;
-        }
         if(isInsert){
           var csrf = $('meta[name=csrf-token]').attr("content");
           $.ajax({
             type:'POST',
             url:newUrl,
             data:{
-              _token: csrf,
-              rd:$("#txtNewRegister").val(),
-              inserOrUpdate:$("#hideInsertOrUpdate").val(),
-              lastName:$("#txtNewLastname").val(),
-              firstname:$("#txtNewFirstname").val(),
-              unit:$("#cmbNewUnit").val(),
-              rankAlbanTushaal:$("#txtNewRank").val(),
-              country:$("#cmbNewCountry").val(),
-              eelj:$("#cmbNewEelj").val(),
-              sector:$("#cmbNewSector").val(),
-              rankType:$("#cmbNewRankType").val(),
-              rank:$("#cmbNewRank").val(),
-              operationRank:$("#txtNewOperationRank").val()
+                _token: csrf,
+                rd:$("#txtNewRegister").val().trim(),
+                inserOrUpdate:$("#hideInsertOrUpdate").val(),
+                lastName:$("#txtNewLastname").val(),
+                firstname:$("#txtNewFirstname").val(),
+                unit:$("#cmbNewUnit").val(),
+                rankAlbanTushaal:$("#txtNewRank").val(),
+                country:$("#cmbNewCountry").val(),
+                eelj:$("#cmbNewEelj").val(),
+                rank:$("#cmbNewRank").val(),
+                operationRank:$("#txtNewOperationRank").val()
             },
             success:function(data){
+              if(data.status == "rdError"){
+                  alertify.alert(data.msg);
+              }
               if(data == "00"){
                 alertify.error("Алдаа гарлаа!!!");
               }
@@ -222,21 +198,11 @@ $(document).ready(function(){
               $('#txtNewFirstname').val('');
               $("#cmbNewUnit").val('');
               $('#txtNewRank').val('');
+              $('#cmbNewRank').val('');
 
               $('#cmbNewCountry').val("-1");
               $("select[name='cmbNewEelj']").prop('disabled', false).find('option[value]').remove();
               $("select[name='cmbNewEelj']")
-                  .append($("<option></option>")
-                  .attr("value", "-1")
-                  .text("Сонгоно уу"));
-              $("select[name='cmbNewSector']").prop('disabled', false).find('option[value]').remove();
-              $("select[name='cmbNewSector']")
-                  .append($("<option></option>")
-                  .attr("value", "-1")
-                  .text("Сонгоно уу"));
-              $('#cmbNewRankType').val('-1');
-              $("select[name='cmbNewRank']").prop('disabled', false).find('option[value]').remove();
-              $("select[name='cmbNewRank']")
                   .append($("<option></option>")
                   .attr("value", "-1")
                   .text("Сонгоно уу"));
@@ -252,46 +218,8 @@ $(document).ready(function(){
 });
 
 
-function checkMissionEmp(){
-    if($("#cmbNewCountry").val() != '-1' && $("#cmbNewEelj").val() != '-1' && $("#txtNewRegister").val().length == 10){
-        $("#error_message").empty();
-        $("#error_message").append('<img width="30" src="' + loading_smallImageUrl + '" /> <label class="control-label">Уншиж байна...</label>');
-        var csrf = $('meta[name=csrf-token]').attr("content");
-        $.ajax({
-            type: 'post',
-            url: checkMissionUrl,
-            data: {
-              _token: csrf,
-              rd:$("#txtNewRegister").val(),
-              country:$("#cmbNewCountry").val(),
-              eelj:$("#cmbNewEelj").val()
-            },
-            success:function(response){
-              if(response > 0){
-                $("#error_message").empty();
-                $("#error_message").append('<img width="30" src="' + wrongImageUrl + '" /><strong>Цэргийн багт ' + $("#txtNewRegister").val() + ' регистрийн дугаартай ЦАХ бүртгэлтэй байна</strong>');
-                $("#hideIsInsertMission").val('0');
-              }
-              else{
-                $("#error_message").empty();
-                $("#error_message").append('<img width="30" src="' + correctImageUrl + '" /><strong>Бүртгэх боломжтой</strong>');
-                $("#hideIsInsertMission").val('1');
-              }
-            }
-        });
-    }
-    else{
-        $("#hideIsInsertMission").val('0');
-    }
-    if($("#txtNewRegister").val() == ''){
-        $("#hideIsInsertMission").val('1');
-    }
-}
-
-
 $(document).ready(function(){
     $("#cmbNewEelj").change(function(){
-        checkMissionEmp();
     });
 });
 
@@ -324,6 +252,7 @@ function refresh(){
           "rightColumns": 1
       },
       "processing": true,
+      "stateSave": true,
       "serverSide": true,
       "ajax":{
                "url": getMissionsUrl,
@@ -336,25 +265,23 @@ function refresh(){
                   }
              },
       "columns": [
-          { data: "country", name: "country", "visible":false },
-          { data: "eelj", name: "eelj", "visible":false },
-          { data: "sector", name: "sector", "visible":false },
-          { data: "rankType", name: "rankType", "visible":false },
-          { data: "rankCode", name: "rankCode", "visible":false },
-          { data: "readMore", name: "readMore" },
-          { data: "id", name: "id" },
-          { data: "countryName", name: "countryName" },
-          { data: "eelj", name: "eelj" },
-          // { data: "sectorName", name: "sectorName" },
-          { data: "RD", name: "RD" },
-          { data: "lastName", name: "lastName" },
-          { data: "firstname", name: "firstname" },
-          { data: "unit", name: "unit" },
-          { data: "RankName", name: "RankName" },
-          { data: "operationRank", name: "operationRank" },
-          { data: "countOp", name: "countOp" },
-          { data: "date", name: "date" },
-          { data: "name", name: "name" }
+        { data: "country", name: "country", "visible":false },
+        { data: "eelj", name: "eelj", "visible":false },
+        { data: "readMore", name: "readMore" },
+          { data: "id", name: "id",  render: function (data, type, row, meta) {
+            return meta.row + meta.settings._iDisplayStart + 1;
+        }  },
+        { data: "countryName", name: "countryName" },
+        { data: "eelj", name: "eelj" },
+        { data: "RD", name: "RD" },
+        { data: "lastName", name: "lastName" },
+        { data: "firstname", name: "firstname" },
+        { data: "unit", name: "unit" },
+        { data: "rankCode", name: "rankCode" },
+        { data: "operationRank", name: "operationRank" },
+        { data: "countOp", name: "countOp" },
+        { data: "date", name: "date" },
+        { data: "name", name: "name" }
         ]
   }).ajax.reload();
 }

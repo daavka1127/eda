@@ -25,36 +25,87 @@ class operationController extends Controller
     }
 
     public function store(Request $req){
-        $operation = new operation;
-        $operation->country = $req->country;
-        $operation->eelj = $req->eelj;
-        $parts = explode('/',$req->leaveDate);
-        $date1 = $parts[2] . '-' . $parts[0] . '-' . $parts[1];
-        $parts = explode('/',$req->arriveDate);
-        $date2 = $parts[2] . '-' . $parts[0] . '-' . $parts[1];
-        $operation->leaveDate = date('Y-m-d', strtotime($date1));
-        $operation->arriveDate = date('Y-m-d', strtotime($date2));
-        $operation->save();
-        return "Амжилттай хадгаллаа.";
+        try{
+            $operation = DB::table('tbajillagaa')
+                ->where('country', '=', $req->country)
+                ->where('eelj', '=', $req->eelj)
+                ->get();
+            $rowCount = $operation->count();
+            if($rowCount > 0){
+                $array = array(
+                    'status' => 'exist',
+                    'msg' => 'Ээлж бүртгэлтэй байна!!!'
+                );
+                return $array;
+            }
+            $operation = new operation;
+            $operation->country = $req->country;
+            $operation->eelj = $req->eelj;
+            $parts = explode('/',$req->leaveDate);
+            $date1 = $parts[2] . '-' . $parts[0] . '-' . $parts[1];
+            $parts = explode('/',$req->arriveDate);
+            $date2 = $parts[2] . '-' . $parts[0] . '-' . $parts[1];
+            $operation->leaveDate = date('Y-m-d', strtotime($date1));
+            $operation->arriveDate = date('Y-m-d', strtotime($date2));
+            $operation->save();
+            $array = array(
+                'status' => 'success',
+                'msg' => 'Амжилттай хадгаллаа!!!'
+            );
+            return $array;
+        }catch(\Exception $e){
+            $array = array(
+                'status' => 'error',
+                'msg' => 'Серверийн алдаа!!! Веб мастерт хандана уу!!!'
+            );
+            return $array;
+        }
+
     }
 
     public function update(Request $req){
-        $operation = operation::find($req->operationID);
-        $operation->country = $req->country;
-        $operation->eelj = $req->eelj;
-        $parts = explode('/',$req->leaveDate);
-        $date1 = $parts[2] . '-' . $parts[0] . '-' . $parts[1];
-        $parts = explode('/',$req->arriveDate);
-        $date2 = $parts[2] . '-' . $parts[0] . '-' . $parts[1];
-        $operation->leaveDate = date('Y-m-d', strtotime($date1));
-        $operation->arriveDate = date('Y-m-d', strtotime($date2));
-        $operation->save();
-        return "Амжилттай хадгаллаа.";
+        try{
+            $operation = operation::find($req->operationID);
+            $operation->country = $req->country;
+            $operation->eelj = $req->eelj;
+            $parts = explode('/',$req->leaveDate);
+            $date1 = $parts[2] . '-' . $parts[0] . '-' . $parts[1];
+            $parts = explode('/',$req->arriveDate);
+            $date2 = $parts[2] . '-' . $parts[0] . '-' . $parts[1];
+            $operation->leaveDate = date('Y-m-d', strtotime($date1));
+            $operation->arriveDate = date('Y-m-d', strtotime($date2));
+            $operation->save();
+            $array = array(
+                'status' => 'success',
+                'msg' => 'Амжилттай хадгаллаа!!!'
+            );
+            return $array;
+        }catch(\Exception $e){
+            $array = array(
+                'status' => 'error',
+                'msg' => 'Серверийн алдаа!!! Веб мастерт хандана уу!!!'
+            );
+            return $array;
+        }
+
     }
 
     public function delete(Request $request){
-        $operation = operation::find($request->operationID);
-        $operation->delete();
+        try{
+            $operation = operation::find($request->operationID);
+            $operation->delete();
+            $array = array(
+                'status' => 'success',
+                'msg' => 'Амжилттай устгалаа!!!'
+            );
+            return $array;
+        }catch(\Exception $e){
+            $array = array(
+                'status' => 'error',
+                'msg' => 'Серверийн алдаа!!! Веб мастерт хандана уу!!!'
+            );
+            return $array;
+        }
     }
 
     public function checkOperationNew(Request $request){

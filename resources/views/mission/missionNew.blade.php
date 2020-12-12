@@ -53,20 +53,10 @@
                 <option value="-1">Сонгоно уу</option>
               </select>
           </div>
-          <div class="form-group col-xs-10 col-sm-4 col-md-4 col-lg-3">
-            <label for="">Ажиллагааны цол: </label>
-            <select class="form-control" id="cmbNewRankType">
-              <option value="-1">Сонгоно уу</option>
-              @foreach($rankTypes as $rankType)
-                <option value="{{$rankType->rankTypeID}}">{{$rankType->TypeName}}</option>
-              @endforeach
-            </select>
-          </div>
+
           <div class="form-group col-xs-10 col-sm-4 col-md-4 col-lg-3">
               <label for="">Ажиллагааны цол: </label>
-              <select class="form-control" id="cmbNewRank" name = "cmbNewRank">
-                <option value="-1">Сонгоно уу</option>
-              </select>
+              <input type="text" class="form-control" id="cmbNewRank" name="cmbNewRank" value="" />
           </div>
           <div class="clearfix"></div>
           {{-- <div class="form-group col-xs-10 col-sm-4 col-md-4 col-lg-3">
@@ -77,10 +67,10 @@
           </div> --}}
           <div class="form-group col-xs-10 col-sm-4 col-md-4 col-lg-6">
               <label for="">Ажиллагааны албан тушаал: </label>
-              <input type="text" id="txtNewOperationRank" class="form-control">
+              <input type="text" id="txtNewOperationRank" class="form-control" />
           </div>
           <div class="form-group col-xs-10 col-sm-4 col-md-4 col-lg-3">
-              <input type="hidden" id="hideIsInsertMission" value="0">
+              <input type="hidden" id="hideIsInsertMission" value="0" />
           </div>
           <div class="clearfix"></div>
 

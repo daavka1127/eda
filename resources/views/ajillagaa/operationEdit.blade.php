@@ -17,7 +17,7 @@
             <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">Улсын нэр <span class="required">*</span>
             </label>
             <div class="col-md-6 col-sm-6 col-xs-12">
-              <select class="form-control" id="cmbEditCountry" name="country">
+              <select class="form-control" id="cmbEditCountry" name="country" disabled>
                 @foreach($countries as $country)
                   <option value="{{$country->id}}">{{$country->countryName}}</option>
                 @endforeach
@@ -28,7 +28,7 @@
             <label class="control-label col-md-3 col-sm-3 col-xs-12" for="first-name">Ээлж <span class="required">*</span>
             </label>
             <div class="col-md-6 col-sm-6 col-xs-12">
-              <input type="number" class="form-control" name="eelj" id="txtEditEelj" />
+              <input type="number" readonly class="form-control" name="eelj" id="txtEditEelj" />
             </div>
           </div>
           <div class="form-group">

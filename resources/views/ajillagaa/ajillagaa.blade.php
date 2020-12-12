@@ -1,6 +1,23 @@
 @extends('layouts.layout_main')
 
 @section('content')
+
+  <!-- Datatables -->
+  <link href="public/vendors/datatables.net-bs/css/dataTables.bootstrap.min.css" rel="stylesheet">
+  <link href="public/vendors/datatables.net-buttons-bs/css/buttons.bootstrap.min.css" rel="stylesheet">
+  <link href="public/vendors/datatables.net-fixedheader-bs/css/fixedHeader.bootstrap.min.css" rel="stylesheet">
+  <link href="public/vendors/datatables.net-responsive-bs/css/responsive.bootstrap.min.css" rel="stylesheet">
+  <link href="public/vendors/datatables.net-scroller-bs/css/scroller.bootstrap.min.css" rel="stylesheet">
+
+  <style media="screen">
+  #tableCountries tbody tr.selected {
+    color: white;
+    background-color: #8893f2;
+  }
+  #tableCountries tbody tr{
+  cursor: pointer;
+  }
+</style>
 @if(Auth::user()->permission == 0)
   <p class="search-title">Та энэ хэсэг рүү нэвтрэх боломжгүй</p>
 @else
@@ -23,41 +40,76 @@
       var deleteOperationUrl = "{{ url('/delete/operation/') }}";
       var showOperationUrl = "{{ url('/show/operation/') }}";
       var checkOperationInsert = "{{ url('/check/operation/') }}";
+
+      var getCountriesUrlDatatable = "{{url('/get/country/datatable')}}";
+      var dataRow = "";
+
+      $(document).ready(function() {
+          var table = $('#tableCountries').DataTable( {
+              "language": {
+                  "lengthMenu": "_MENU_ мөрөөр харах",
+                  "zeroRecords": "Хайлт илэрцгүй байна",
+                  "info": "Нийт _PAGES_ -аас _PAGE_-р хуудас харж байна ",
+                  "infoEmpty": "Хайлт илэрцгүй",
+                  "infoFiltered": "(_MAX_ мөрөөс хайлт хийлээ)",
+                  "sSearch": "Хайх: ",
+                  "paginate": {
+                    "previous": "Өмнөх",
+                    "next": "Дараахи"
+                  }
+              },
+              "processing": true,
+              "serverSide": true,
+              "order": [[ 1, "asc" ]],
+              "stateSave": true,
+              "ajax":{
+                       "url": "{{url('/get/country/datatable')}}",
+                       "dataType": "json",
+                       "type": "post",
+                       "data":{
+                            _token: $('meta[name="csrf-token"]').attr('content')
+                          }
+                     },
+              "columns": [
+                { data: "id", name: "id",  render: function (data, type, row, meta) {
+                    return meta.row + meta.settings._iDisplayStart + 1;
+                }  },
+                { data: "countryName", name: "countryName" }
+                ]
+          });
+
+          $('#tableCountries tbody').on( 'click', 'tr', function () {
+          if ( $(this).hasClass('selected') ) {
+              $(this).removeClass('selected');
+              dataRow = "";
+          }else {
+              table.$('tr.selected').removeClass('selected');
+              $(this).addClass('selected');
+              var currow = $(this).closest('tr');
+              dataRow = $('#tableCountries').DataTable().row(currow).data();
+          }
+          });
+      });
   </script>
   <script src="{{url('public/js/country/country.js')}}"></script>
   <script src="{{url('public/js/ajillagaa/operation.js')}}"></script>
 
-  <div class="col-md-5">
+  <div class="col-md-10">
     <div id="countries">
       <h3><strong>Ажиллагааны улс</strong></h3>
-      <table class="table">
+      <table id="tableCountries" class="table table-striped table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
         <thead>
           <tr>
             <th>№</th>
             <th>Улс</th>
-            <th></th>
           </tr>
         </thead>
         <tbody>
-          @php $i=1; @endphp
-          @foreach($countries as $country)
-            <tr id="row{{$country->id}}">
-              <td>{{$i}}</td>
-              <td id="clCountryName{{$country->id}}">
-                {{$country->countryName}}
-                <input type="hidden" value="{{$country->countryName}}" id="countryName" />
-              </td>
-              <td>
-                <input type="button" class="btn btn-warning" value="Засах" onclick="editCountry({{$country->id}}, '{{$country->countryName}}')" />
-                <input type="button" class="btn btn-danger" value="Устгах" onclick="deleteCountry({{$country->id}})" />
-              </td>
-            </tr>
-            @php $i++; @endphp
-          @endforeach
-          <script>lastIndex = {{$i}};</script>
         </tbody>
       </table>
       <button type="button" class="btn btn-success" data-toggle="modal" data-target="#newCountry">Улс нэмэх</button>
+      <button type="button" class="btn btn-warning" id="btnEditModalShow" data-toggle="modal">Улс засах</button>
+      <button type="button" class="btn btn-danger" id="btnDeleteCountry" data-toggle="modal">Улс устгах</button>
     </div>
     {!!session('success_message')!!}
     {!!session('error_message')!!}
@@ -67,55 +119,22 @@
     @include('country.countryEdit')
   </div>
   {{-- END Country --}}
-
-
-
-  <div class="col-md-7">
-    {{-- START OPERATION DIV --}}
-    <div id="operations">
-      <h3><strong>Явагдсан ажиллагаа</strong></h3>
-      <div class="col-md-6 col-sm-6 col-xs-12">
-        <select name="cmbCountry" id="cmbCountry" class="form-control">
-          <option value="-1">Сонгоно уу</option>
-          @foreach ($countries as $country)
-              <option value="{{$country->id}}">{{$country->countryName}}</option>
-          @endforeach
-        </select>
-      </div>
-      <table class="table" id="operations">
-        <thead>
-          <tr>
-            <th>№</th>
-            <th>Улс</th>
-            <th>Ээлж</th>
-            <th>Явсан өдөр</th>
-            <th>Ирсэн өдөр</th>
-          </tr>
-        </thead>
-        <tbody>
-          @php $i=1; @endphp
-          @foreach($operations as $operation)
-            <tr id="row{{$operation->id}}">
-              <td>{{$i}}</td>
-              <td>{{$operation->countryName}}</td>
-              <td>{{$operation->eelj}}</td>
-              <td>{{$operation->leaveDate}}</td>
-              <td>{{$operation->arriveDate}}</td>
-              <td>
-                <input type="button" class="btn btn-warning" value="Засах" onclick="editOperation({{$operation->id}}, '{{$operation->country}}', {{$operation->eelj}}, '{{$operation->leaveDate}}', '{{$operation->arriveDate}}')" />
-                <input type="button" class="btn btn-danger" value="Устгах" onclick="deleteOperation({{$operation->id}})" />
-              </td>
-            </tr>
-            @php $i++; @endphp
-          @endforeach
-          <script>lastIndex = {{$i}};</script>
-        </tbody>
-      </table>
-      <button type="button" class="btn btn-success" data-toggle="modal" data-target="#newOperation">Ажиллагаа нэмэх</button>
-    </div>
-    {{-- END OPERATION DIV --}}
-    @include('ajillagaa.operationNew')
-    @include('ajillagaa.operationEdit')
-  </div>
 @endif
+
+<!-- Datatables -->
+<script src="public/vendors/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="public/vendors/datatables.net-bs/js/dataTables.bootstrap.min.js"></script>
+<script src="public/vendors/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
+<script src="public/vendors/datatables.net-buttons-bs/js/buttons.bootstrap.min.js"></script>
+<script src="public/vendors/datatables.net-buttons/js/buttons.flash.min.js"></script>
+<script src="public/vendors/datatables.net-buttons/js/buttons.html5.min.js"></script>
+<script src="public/vendors/datatables.net-buttons/js/buttons.print.min.js"></script>
+<script src="public/vendors/datatables.net-fixedheader/js/dataTables.fixedHeader.min.js"></script>
+<script src="public/vendors/datatables.net-keytable/js/dataTables.keyTable.min.js"></script>
+<script src="public/vendors/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+<script src="public/vendors/datatables.net-responsive-bs/js/responsive.bootstrap.js"></script>
+<script src="public/vendors/datatables.net-scroller/js/dataTables.scroller.min.js"></script>
+<script src="public/vendors/jszip/dist/jszip.min.js"></script>
+<script src="public/vendors/pdfmake/build/pdfmake.min.js"></script>
+<script src="public/vendors/pdfmake/build/vfs_fonts.js"></script>
 @endsection

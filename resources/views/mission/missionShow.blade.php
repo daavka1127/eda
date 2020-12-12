@@ -32,22 +32,21 @@
                 "next": "Дараахи"
               }
           },
+          "stateSave": true,
           "columns": [
             { data: "country", name: "country", "visible":false },
             { data: "eelj", name: "eelj", "visible":false },
-            { data: "sector", name: "sector", "visible":false },
-            { data: "rankType", name: "rankType", "visible":false },
-            { data: "rankCode", name: "rankCode", "visible":false },
             { data: "readMore", name: "readMore" },
-            { data: "id", name: "id" },
+            { data: "id", name: "id",  render: function (data, type, row, meta) {
+                return meta.row + meta.settings._iDisplayStart + 1;
+            }  },
             { data: "countryName", name: "countryName" },
             { data: "eelj", name: "eelj" },
-            // { data: "sectorName", name: "sectorName" },
             { data: "RD", name: "RD" },
             { data: "lastName", name: "lastName" },
             { data: "firstname", name: "firstname" },
             { data: "unit", name: "unit" },
-            { data: "RankName", name: "RankName" },
+            { data: "rankCode", name: "rankCode" },
             { data: "operationRank", name: "operationRank" },
             { data: "countOp", name: "countOp" },
             { data: "date", name: "date" },
@@ -105,13 +104,16 @@ $(document).ready(function(){
               @endforeach
             </select>
           </div>
-          <div class="col-md-2">
+          <div class="col-md-1">
               <h5 class="fore-red"><strong>Ээлж -> </strong></h5>
           </div>
           <div class="col-md-3">
             <select class="form-control" id="cmbEelj" name="cmbEelj">
 
             </select>
+          </div>
+          <div class="col-md-2">
+            <input type="button" class="btn btn-danger" post-url="{{url("/delete/all/emp/eelj")}}" id="btnDeleteAllPeopleThisEelj" name="" value="Энэ ээлжийн хүмүүсийг устгах">
           </div>
       </div>
       <div class="clearfix"></div>
@@ -122,14 +124,10 @@ $(document).ready(function(){
           <tr>
             <th></th>
             <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
-            <th></th>
+            <th>Команд</th>
             <th>ID</th>
             <th>Ажиллагааны улс</th>
             <th>Ээлж</th>
-            {{-- <th>Салбар</th> --}}
             <th>Регистрийн дугаар</th>
             <th>Овог</th>
             <th>Нэр</th>

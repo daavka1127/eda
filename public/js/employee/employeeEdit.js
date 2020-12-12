@@ -5,7 +5,7 @@ $(document).ready(function(){
             var csrf = $('meta[name=csrf-token]').attr("content");
             $("#txtEditRegister").val(data["RD"]);
             $("#hideEditOldRegister").val(data["RD"]);
-            $("#cmbEditRankType").val(data["rankType"]);
+            $("#cmbEditRank").val(data["rankCode"]);
             $("#txtEditOperationRank").val(data["operationRank"]);
             $("#hideMissionId").val(data["id"]);
             //START eelj combobox-iig fill hiij bn
@@ -53,47 +53,6 @@ $(document).ready(function(){
                     }
                 }
             });
-            // START tsoliig fill hiiij bn
-            $.ajax({
-                type: 'post',
-                url: getRankUrl,
-                data: {_token: csrf, rankNum:data["rankType"]},
-                success:function(response){
-                  $("select[name='cmbEditRank']").prop('disabled', false).find('option[value]').remove();
-                  $("select[name='cmbEditRank']")
-                      .append($("<option></option>")
-                      .attr("value", "-1")
-                      .text("Сонгоно уу"));
-                  $.each(response, function (key, value) {
-                      $("select[name='cmbEditRank']")
-                          .append($("<option></option>")
-                          .attr("value", value)
-                          .text(key));
-
-                  });
-                  $("#cmbEditRank").val(data["rankCode"]);
-                }
-            });
-            //START salbariig fill hiij bn
-            $.ajax({
-                type: 'POST',
-                url: getSectorUrl,
-                data: {_token: csrf, countryID:$("#cmbCountry").val()},
-                success:function(response){
-                  $("select[name='cmbEditSector']").prop('disabled', false).find('option[value]').remove();
-                  $("select[name='cmbEditSector']")
-                      .append($("<option></option>")
-                      .attr("value", "-1")
-                      .text("Сонгоно уу"));
-                  $.each(response, function (key, value) {
-                      $("select[name='cmbEditSector']")
-                          .append($("<option></option>")
-                          .attr("value", value)
-                          .text(key));
-                  });
-                  $("select[name='cmbEditSector']").val(data["sector"]);
-                }
-            });
             $("#editEmpMission").modal('show');
         }else{
             alert("Засах албан хаагчаа сонгоно уу!!!");
@@ -120,51 +79,25 @@ $(document).ready(function(){
                         $('#hideInsertOrUpdate').val("0");
                     }
                     else{
-                      $('#hideInsertOrUpdate').val("1");
-
-                        $('#txtEditLastname').val('');
-                        $('#txtEditFirstname').val('');
-                        $("#cmbEditUnit").val('');
-                        $('#txtEditRank').val('');
+                      // $('#hideInsertOrUpdate').val("1");
+                      //
+                      //   $('#txtEditLastname').val('');
+                      //   $('#txtEditFirstname').val('');
+                      //   $("#cmbEditUnit").val('');
+                      //   $('#txtEditRank').val('');
                     }
                 }
             });
         }
         else{
-          $('#txtNewLastname').val('');
-          $('#txtNewFirstname').val('');
-          $("select[name='cmbNewUnit']").val('-1');
-          $('#txtNewRank').val('');
+          // $('#txtNewLastname').val('');
+          // $('#txtNewFirstname').val('');
+          // $("select[name='cmbNewUnit']").val('-1');
+          // $('#txtNewRank').val('');
         }
-        checkMissionEmp();
     });
 });
 
-
-// Tsolnii turul songohod tsoliig fill hiine
-$(document).ready(function(){
-    $("#cmbEditRankType").change(function(){
-        var csrf = $('meta[name=csrf-token]').attr("content");
-        $.ajax({
-            type: 'post',
-            url: getRankUrl,
-            data: {_token: csrf, rankNum:$("#cmbEditRankType").val()},
-            success:function(response){
-              $("select[name='cmbEditRank']").prop('disabled', false).find('option[value]').remove();
-              $("select[name='cmbEditRank']")
-                  .append($("<option></option>")
-                  .attr("value", "-1")
-                  .text("Сонгоно уу"));
-              $.each(response, function (key, value) {
-                  $("select[name='cmbEditRank']")
-                      .append($("<option></option>")
-                      .attr("value", value)
-                      .text(key));
-              });
-            }
-        });
-    });
-});
 
 
 //Ajillagaanii uls songoh uyd eeljin dugaar combog fill hiij bn
@@ -189,24 +122,6 @@ $(document).ready(function(){
               });
             }
         });
-        $.ajax({
-            type: 'POST',
-            url: getSectorUrl,
-            data: {_token: csrf, countryID:$("#cmbEditCountry").val()},
-            success:function(response){
-              $("select[name='cmbEditSector']").prop('disabled', false).find('option[value]').remove();
-              $("select[name='cmbEditSector']")
-                  .append($("<option></option>")
-                  .attr("value", "-1")
-                  .text("Сонгоно уу"));
-              $.each(response, function (key, value) {
-                  $("select[name='cmbEditSector']")
-                      .append($("<option></option>")
-                      .attr("value", value)
-                      .text(key));
-              });
-            }
-        });
     });
 });
 
@@ -226,24 +141,12 @@ $(document).ready(function(){
             alertify.error('Албан хаагчийн ангиа сонгоно уу!!!');
             isUpdate = false;
         }
-        if($("#txtEditRank").val() == ""){
-            alertify.error('Ангийн албан тушаал хоосон байна!!!');
-            isUpdate = false;
-        }
         if($("#cmbEditCountry").val() == "-1"){
             alertify.error('Ажиллагааны улсаа сонгоно уу!!!');
             isUpdate = false;
         }
         if($("#cmbEditEelj").val() == "-1"){
             alertify.error('Ажиллагааны ээлжээ сонгоно уу!!!');
-            isUpdate = false;
-        }
-        if($("#cmbEditRankType").val() == "-1"){
-            alertify.error('Ажиллагааны цолоо сонгоно уу!!!');
-            isUpdate = false;
-        }
-        if($("#cmbEditRank").val() == "-1"){
-            alertify.error('Ажиллагааны цолоо сонгоно уу!!!');
             isUpdate = false;
         }
         if(isUpdate){
@@ -253,8 +156,8 @@ $(document).ready(function(){
               url:editUrl,
               data:{
                 _token: csrf,
-                old_rd:$("#hideEditOldRegister").val(),
-                rd:$("#txtEditRegister").val(),
+                old_rd:$("#hideEditOldRegister").val().trim().replace(' ', ''),
+                rd:$("#txtEditRegister").val().trim().replace(' ', ''),
                 lastName:$("#txtEditLastname").val(),
                 firstname:$("#txtEditFirstname").val(),
                 unit:$("#cmbEditUnit").val(),
@@ -262,19 +165,18 @@ $(document).ready(function(){
                 id:$("#hideMissionId").val(),
                 country:$("#cmbEditCountry").val(),
                 eelj:$("#cmbEditEelj").val(),
-                sector:$("#cmbEditSector").val(),
-                rankType:$("#cmbEditRankType").val(),
                 rank:$("#cmbEditRank").val(),
-                operationRank:$("#txtEditOperationRank").val()
+                operationRank:$("#txtEditOperationRank").val(),
+                hideMissionId:$("#hideMissionId").val()
               },
               success:function(data){
-                if(data == "00"){
-                  alertify.error("Алдаа гарлаа!!!");
+                if(data.status == "success"){
+                    alertify.alert(data.msg);
+                    $("#editEmpMission").modal('hide');
+                    refresh();
                 }
                 else{
-                  alertify.alert(data);
-                  $("#editEmpMission").modal('hide');
-                  refresh();
+                    alertify.error(data.msg);
                 }
               },
               error: function(XMLHttpRequest, textStatus, errorThrown) {

@@ -8,6 +8,7 @@ use Response;
 use Illuminate\Support\Facades\Input;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\Auth;
+use App\employee;
 
 class missionSearchController extends Controller
 {
@@ -57,5 +58,50 @@ class missionSearchController extends Controller
             ->addColumn('readMore', '<input type="button" onclick=readmoreMisstionByEmp("{{$RD}}") value="Дэлгэрэнгүй" />')
             ->rawColumns(['readMore'])
             ->make(true);
+    }
+
+    public function searchMissionFast(Request $request){
+        // try{
+            $orderby = $request->input('order.0.column');
+            $sort['col'] = $request->input('columns.' . $orderby . '.data');
+            $sort['dir'] = $request->input('order.0.dir');
+            $missions = employee::join('tbmission', 'tbmission.RD', '=', 'tbemployee.RD')
+                ->select('tbemployee.RD as RD1', 'tbemployee.lastName', 'tbemployee.firstname',
+                    'tbemployee.unit', 'tbemployee.rank', 'tbemployee.sex',
+            DB::raw('(select COUNT(*) FROM tbmission as t1 WHERE t1.RD = tbmission.RD) as countOp'))
+                // $missions->addSelect(DB::raw("'asd' as fakeColumn"));
+                ->where('tbemployee.RD', 'like', $request->rd . '%')
+                ->where('tbemployee.lastName', 'like', $request->lastName . '%')
+                ->where('tbemployee.firstname', 'like', $request->firstname . '%');
+            if($request->opName != -1){
+              $missions->where('tbmission.country', '=', $request->opName);
+            }
+            if($request->eelj != -1){
+              $missions->where('tbmission.eelj', '=', $request->eelj);
+            }
+            if($request->sector != -1){
+              $missions->where('tbmission.sector', '=', $request->sector);
+            }
+
+
+            $output['recordsTotal'] = $missions->count();
+
+            $output['data'] = $missions
+                    ->orderBy($sort['col'], $sort['dir'])
+                    ->groupby('tbemployee.RD', 'tbmission.RD', 'tbemployee.lastName', 'tbemployee.firstname', 'tbemployee.unit',
+                        'tbemployee.rank', 'tbemployee.sex')
+                    ->skip($request->input('start'))
+                    ->take($request->input('length',10))
+                    // $missions
+                    ->get();
+
+            $output['recordsFiltered'] = $output['recordsTotal'];
+
+            $output['draw'] = intval($request->input('draw'));
+
+            return $output;
+        // }catch(\Exception $e){
+        //     return "Серверийн алдаа!!! Веб мастерт хандана уу";
+        // }
     }
 }

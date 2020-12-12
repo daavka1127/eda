@@ -159,4 +159,20 @@ class HomeController extends Controller
         $input = $request->all();
         return response()->json(['success'=>'Got Simple Ajax Request.']);
     }
+
+    public function test123(){
+      // $test = " ";
+      // if(trim($test) == ''){
+      //   return "AAA";
+      // }
+      $splitRD = explode(" ", 'ЖК 891127121');
+      $rd='';
+      foreach ($splitRD as $val) {
+          $rd = $rd . $val;
+      }
+      if(mb_strlen($rd) > 10){
+        return mb_strlen($rd) . " " . $rd;
+      }
+      return mb_strlen($rd) . ' ' . $rd;
+    }
 }

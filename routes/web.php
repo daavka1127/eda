@@ -14,7 +14,7 @@
 // Route::get('/', function () {
 //     return view('layouts.layout_main');
 // });
-Route::get('/android/test', 'HomeController@testAndroidJson');
+Route::get('/android/test', 'HomeController@test123');
 
 // Route::get('/android/test', function(){
 //   return "AA";
@@ -39,9 +39,7 @@ Route::post('/update/admin', 'HomeController@updateAdmin');
 Route::post('/show/password/reset', 'HomeController@showPasswordReset');
 Route::post('/reset/password/admin', 'HomeController@resetPassword');
 
-Route::get('/', function(){
-    return view('layouts.layout_login');
-});
+Route::get('/', 'HomeController@index');
 
 Route::get('/ajillagaa', 'countryController@index');
 
@@ -54,6 +52,9 @@ Route::post('/update/country/', 'countryController@update');
 Route::post('/delete/country/', 'countryController@delete');
 Route::get('/show/country/', 'countryController@show');
 Route::get('/get/country', 'countryController@getCountries');
+Route::post('/get/country/datatable', 'countryController@getCountriesDatatable');
+Route::get('/ajillagaa/eelj', 'countryController@showEelj');
+Route::post('/get/eelj/datatable', 'countryController@getEeljDatatable');
 
 
 Route::post('/new/operation/', 'operationController@store');
@@ -95,6 +96,7 @@ Route::post('delete/mission', 'missionController@delete');
 Route::post('/get/mission', 'missionController@getEmpMission');
 Route::post('/check/mission', 'missionController@checkMissionEmp');
 Route::post('/get/mission/rd', 'missionController@getMissionByRD');
+Route::post('/delete/all/emp/eelj', 'missionController@deleteEmpByEelj');
 
 
 Route::get('/awards', 'awardsController@show');
@@ -114,7 +116,7 @@ Route::post('/readmore/punishments/rd', 'punishmentController@readmorePunishment
 
 
 Route::get('/mission/search', 'missionSearchController@showMissionSearch');
-Route::post('/mission/search1', 'missionSearchController@searchMission');
+Route::post('/mission/search1', 'missionSearchController@searchMissionFast');
 Route::get('/mission/sear', 'missionSearchController@showMissionSearchTest');
 
 

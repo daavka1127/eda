@@ -14,5 +14,13 @@ use Illuminate\Http\Request;
 */
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+    return "aa";
+});
+// START Admin hesgiin API
+// Route::post('/show/admins', 'AdminController@getAdmins')->middleware('auth:api');
+// END Admin hesgiin API
+Route::group(['middleware' => 'auth:api'], function(){
+
+    Route::post('/show/admins', 'AdminController@getAdmins')->middleware('auth:api');
+
 });

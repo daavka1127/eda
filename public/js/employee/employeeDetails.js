@@ -35,7 +35,7 @@ function readmoreMisstionByEmp(register){
             { data: "id", name: "id" },
             { data: "countryName", name: "countryName" },
             { data: "eelj", name: "eelj" },
-            { data: "RankName", name: "RankName" },
+            { data: "rankCode", name: "rankCode" },
             { data: "operationRank", name: "operationRank" },
             { data: "date", name: "date" },
             { data: "name", name: "name" }
@@ -63,7 +63,7 @@ function readmoreMisstionByEmp(register){
     });
     readmoreAwadsByRD(register);
     readmorePunishmentsByRD(register);
-    readmoreTrainingsByRD(register);
+    // readmoreTrainingsByRD(register);
 }
 
 function readmoreAwadsByRD(register){
@@ -198,3 +198,7 @@ $(document).ready(function(){
         setTimeout(function(){newWin.close();},10);
     });
 });
+
+function readmoreClick(){
+    alert(data["RD"]);
+}

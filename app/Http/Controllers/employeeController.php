@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use DB;
 use App\employee;
+use App\mission;
 use Response;
 use Illuminate\Support\Facades\Input;
 use Yajra\DataTables\DataTables;
@@ -41,15 +42,98 @@ class employeeController extends Controller
     }
 
     public function update(Request $req){
-        $emp = employee::find($req->old_rd);
-        $emp->RD = $req->RD;
-        $emp->lastName = $req->lastName;
-        $emp->firstname = $req->firstname;
-        $emp->unit = $req->unit;
-        $emp->rank = $req->rank;
-        $emp->date = date("Y/m/d h:i:s");
-        $emp->admin = Auth::user()->id;
-        $emp->save();
+
+        try{
+            $rd = $req->rd;
+            if($req->rd == ''){
+                $msg = array(
+                   'status' => 'rdError',
+                   'msg' => 'Регистрийн дугаар хоосон байна!!!'
+                );
+                return $msg;
+            }
+
+            $checkedUser = employee::where('RD', '=', $req->rd)->get();
+
+            if(count($checkedUser) == 0){
+                if($req->rd != $req->old_rd){
+                    $nrd = DB::delete('DELETE FROM tbemployee WHERE RD = "' . $req->old_rd . '"');
+                }
+                $emp = DB::table('tbemployee')
+                    ->where('RD', '=', $req->old_rd);
+                    $sexNumber = substr($req->rd, 10, 1);
+                    if(($sexNumber%2) == 1){
+                        $sex = "эр";
+                    }
+                    else if(($sexNumber%2) == 0){
+                        $sex = "эм";
+                    }
+                    else{
+                        $sex = "";
+                    }
+                $emp = new employee;
+                $emp->RD = $req->rd;
+                $emp->lastName = $req->lastName;
+                $emp->firstname = $req->firstname;
+                $sexNumber = substr($req->rd, 10, 1);
+                if(($sexNumber%2) == 1){
+                    $emp->sex = "эр";
+                }
+                else if(($sexNumber%2) == 0){
+                    $emp->sex = "эм";
+                }
+                else{
+                    $emp->sex = "";
+                }
+                $emp->unit = $req->unit;
+                $emp->rank = $req->rankAlbanTushaal;
+                $emp->date = date("Y/m/d h:i:s");
+                $emp->admin = Auth::user()->id;
+                $emp->save();
+
+                if($req->rd != $req->old_rd){
+                    $mission = mission::where('RD', '=', $req->old_rd)->update(['RD' => $req->rd]);
+                }
+            }
+            else{
+                if($req->rd != $req->old_rd){
+                    $nrd = DB::delete('DELETE FROM tbemployee WHERE RD = "' . $req->old_rd . '"');
+                }
+
+                $emp = employee::find($req->rd);
+
+                $emp->RD = $req->rd;
+                $emp->lastName = $req->lastName;
+                $emp->firstname = $req->firstname;
+                $sexNumber = substr($req->rd, 10, 1);
+                if(($sexNumber%2) == 1){
+                    $emp->sex = "эр";
+                }
+                else if(($sexNumber%2) == 0){
+                    $emp->sex = "эм";
+                }
+                else{
+                    $emp->sex = "";
+                }
+                $emp->unit = $req->unit;
+                $emp->rank = $req->rankAlbanTushaal;
+                $emp->date = date("Y/m/d h:i:s");
+                $emp->admin = Auth::user()->id;
+                $emp->save();
+            }
+
+             $msg = array(
+                'status' => 'success',
+                'msg' => 'Амжилттай хадгаллаа!!!'
+             );
+            return $msg;
+        }catch(\Exception $e){
+            $msg = array(
+               'status' => 'error',
+               'msg' => 'Серверийн алдаа гарлаа. Веб мастерт хандана уу!!!'
+            );
+            return $msg;
+        }
     }
 
     public static function updateFromExcel($RD, $lastName, $firstname, $sex, $unit, $rank){
@@ -76,7 +160,7 @@ class employeeController extends Controller
 
     public function getEmptyRD(){
         $emptyRD = DB::table('tbemployee')
-            ->select(DB::Raw('IFNULL(max(RD), 0) as count'))
+            ->select(DB::Raw('max(CAST(RD AS int)) as count'))
             ->whereRaw('LENGTH(RD) < 10')
             ->first();
         return $emptyRD->count + 1;

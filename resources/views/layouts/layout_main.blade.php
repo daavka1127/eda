@@ -87,7 +87,8 @@
                   <li><a href="{{url('/trainings')}}"><i class="fa fa-book"></i> Сургууль, дамжааны лавлах <span class="fa fa-chevron-down"></span></a></li>
                   <li><a><i class="fa fa-gear"></i> Нэмэлт, засвар хийх <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
-                      <li><a href="{{url('/ajillagaa')}}">Ажиллагаа нэмэх</a></li>
+                      <li><a href="{{url('/ajillagaa')}}">Ажиллагааны улс нэмэх</a></li>
+                      <li><a href="{{url('/ajillagaa/eelj')}}">Ажиллагааны ээлж нэмэх</a></li>
                       <li><a href="{{url('/sectors')}}">Цэргийн багийн салбар, нэгж нэмэх</a></li>
                       <li><a href="{{url('/units')}}">Анги байгууллага нэмэх</a></li>
                     </ul>

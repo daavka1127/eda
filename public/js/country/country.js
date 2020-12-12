@@ -5,30 +5,40 @@ function editCountry(id, name){
 }
 
 function fillCountries(){
-  $( "#countries" ).empty();
-  $( "#countries" ).append("<img src='" + loadingImageUrl + "'/>");
-  $.ajax({
-    type:'GET',
-    url:showCountryUrl,
-    success:function(data){
-      $( "#countries" ).empty();
-      $("#countries").append(data);
-    },
-    error: function(XMLHttpRequest, textStatus, errorThrown) {
-        alertify.error("Status: " + textStatus); alertify.error("Error: " + errorThrown);
-        $( "#countries" ).empty();
-        $( "#countries" ).append("Сервертэй холбогдоход алдаа гарлаа.");
-    }
+  $('#tableCountries').dataTable().fnDestroy();
+  var table = $('#tableCountries').DataTable( {
+      "language": {
+          "lengthMenu": "_MENU_ мөрөөр харах",
+          "zeroRecords": "Хайлт илэрцгүй байна",
+          "info": "Нийт _PAGES_ -аас _PAGE_-р хуудас харж байна ",
+          "infoEmpty": "Хайлт илэрцгүй",
+          "infoFiltered": "(_MAX_ мөрөөс хайлт хийлээ)",
+          "sSearch": "Хайх: ",
+          "paginate": {
+            "previous": "Өмнөх",
+            "next": "Дараахи"
+          }
+      },
+      "processing": true,
+      "serverSide": true,
+      "order": [[ 1, "asc" ]],
+      "stateSave": true,
+      "ajax":{
+               "url": getCountriesUrlDatatable,
+               "dataType": "json",
+               "type": "post",
+               "data":{
+                    _token: $('meta[name="csrf-token"]').attr('content')
+                  }
+             },
+      "columns": [
+        { data: "id", name: "id",  render: function (data, type, row, meta) {
+            return meta.row + meta.settings._iDisplayStart + 1;
+        }  },
+        { data: "countryName", name: "countryName" }
+        ]
   });
 }
-
-$(document).ready(function(){
-  $("#frmNewCountry").keypress(function(e) {
-      if(e.which == 13) {
-          $('#btnNewCountry').click();
-      }
-  });
-});
 
 $(document).ready(function(){
   $("#btnNewCountry").click(function(){
@@ -47,10 +57,14 @@ $(document).ready(function(){
           txtCountryNew:$("#txtCountryNew").val()
         },
         success:function(data){
-          alertify.alert(data);
-          fillCountries();
-          fillCountriesSelect();
-          $("#txtCountryNew").val("");
+            if(data.status == "success"){
+                alertify.alert(data.msg);
+                fillCountries();
+                $("#txtCountryNew").val("");
+            }
+            else{
+                alertify.error(data.msg);
+            }
         },
         error: function(XMLHttpRequest, textStatus, errorThrown) {
             alertify.error("Status: " + textStatus); alertify.error("Error: " + errorThrown);
@@ -61,14 +75,18 @@ $(document).ready(function(){
 });
 
 
-
 $(document).ready(function(){
-  $("#frmEditCountry").keypress(function(e) {
-      if(e.which == 13) {
-          $('#btnEditCountry').click();
-      }
-  });
+    $("#btnEditModalShow").click(function(){
+        if(dataRow == ""){
+            alertify.error("Та засах мөрөө дээрхи хүснэгтээс сонгоно уу!!!");
+            return;
+        }
+        $("#txtCountryEdit").val(dataRow["countryName"]);
+        $("#countryID").val(dataRow["id"]);
+        $("#editCountry").modal('show');
+    });
 });
+
 
 $(document).ready(function(){
   $("#btnEditCountry").click(function(e){
@@ -88,10 +106,14 @@ $(document).ready(function(){
         url:editUrl,
         data:{_token: csrf, countryID : $("#countryID").val(), txtCountryEdit:$("#txtCountryEdit").val()},
         success:function(data){
-          $("#editCountry").modal('hide');
-          alertify.alert(data);
-          fillCountries();
-          fillCountriesSelect();
+          if(data.status == "success"){
+              $("#editCountry").modal('hide');
+              alertify.alert(data.msg);
+              fillCountries();
+          }
+          else{
+              alertify.error(data.msg);
+          }
         },
         error: function(XMLHttpRequest, textStatus, errorThrown) {
             alertify.error("Status: " + textStatus); alertify.error("Error: " + errorThrown);
@@ -103,55 +125,33 @@ $(document).ready(function(){
 
 
 
-function deleteCountry(id){
-  alertify.confirm( "Та устгахдаа итгэлтэй байна уу?", function (e) {
-    if (e) {
-      var csrf = $('meta[name=csrf-token]').attr("content");
-      $.ajax({
-          type: 'POST',
-          url: deleteUrl,
-          data: {_token: csrf, countryID : id},
-          success:function(data){
-              alertify.alert("Амжилттай устлаа.");
-              fillCountries();
-              fillOperations();
-              fillCountriesSelect();
-          },
-          error: function(XMLHttpRequest, textStatus, errorThrown) {
-              alertify.error("Status: " + textStatus); alertify.error("Error: " + errorThrown);
-          }
-      })
-    } else {
-        alertify.error('Устгах үйлдэл цуцлагдлаа.');
-    }
-  });
-}
-
-
-function fillCountriesSelect(){
-  $('#cmbCountryName')
-    .find('option')
-    .remove();
-  $('#cmbEditCountry')
-    .find('option')
-    .remove();
-
-    $.ajax({
-        type: 'get',
-        url: getCountriesUrl,
-        success:function(response){
-          $.each(response, function (key, value) {
-              $('#cmbCountryName')
-                  .append($("<option></option>")
-                  .attr("value", value)
-                  .text(key));
-          });
-          $.each(response, function (key, value) {
-              $('#cmbEditCountry')
-                  .append($("<option></option>")
-                  .attr("value", value)
-                  .text(key));
-          });
+$(document).ready(function(){
+    $("#btnDeleteCountry").click(function(){
+        if(dataRow == ""){
+            alertify.error("Та устгах мөрөө дээрхи хүснэгтээс сонгоно уу!!!");
+            return;
         }
+        alertify.confirm( "Та устгахдаа итгэлтэй байна уу?", function (e) {
+          if (e) {
+            var csrf = $('meta[name=csrf-token]').attr("content");
+            $.ajax({
+                type: 'POST',
+                url: deleteUrl,
+                data: {_token: csrf, countryID : dataRow['id']},
+                success:function(data){
+                    if(data.status == "success"){
+                      alertify.alert("Амжилттай устлаа.");
+                      fillCountries();
+                    }
+                    else{
+                        alertify.error(data.msg);
+                    }
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    alertify.error("Status: " + textStatus); alertify.error("Error: " + errorThrown);
+                }
+            })
+          }
+        });
     });
-}
+});

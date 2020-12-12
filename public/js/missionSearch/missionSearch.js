@@ -2,33 +2,23 @@ $(document).ready(function(){
     $("#cmbOperationName").change(function(){
         refreshEelj();
         refreshSection();
-        search();
     });
 });
+
+$(document).ready(function(){
+    $("#btnSearchMission").click(function(e){
+        e.preventDefault();
+        if($("#txtRegister").val().length > 3 || $("#txtLastname").val().length > 3 || $("#txtFirstname").val().length > 3){
+
+            search();
+        }
+    });
+});
+
 $(document).ready(function(){
     $("#cmbEelj").change(function(){
         search();
     });
-});
-$(document).ready(function(){
-    $("#cmbSection").change(function(){
-        search();
-    });
-});
-$(document).ready(function(){
-  $("#txtRegister").keyup(function(){
-    search();
-  });
-});
-$(document).ready(function(){
-  $("#txtLastname").keyup(function(){
-    search();
-  });
-});
-$(document).ready(function(){
-  $("#txtFirstname").keyup(function(){
-    search();
-  });
 });
 
 function refreshEelj(){
@@ -99,6 +89,7 @@ function search(){
       },
       "processing": true,
       "serverSide": true,
+      searching: false,
       "ajax":{
                "url": searchUrl,
                "dataType": "json",
@@ -114,11 +105,99 @@ function search(){
                   }
              },
       "columns": [
-          { data: "readMore", name: "readMore" },
-          { data: "RD", name: "RD"},
+          {data: "RD1" , render : function ( data, type, row, meta ) {
+              return type === 'display'  ?
+                '<input type="button" class="btn btn-info" onclick=readmoreMisstionByEmp("' + data + '") id="btnReaderMore" value="Дэлгэрэнгүй" />' :
+                data;
+            }},
+          { data: "RD1", name: "RD1"},
           { data: "lastName", name: "lastName" },
           { data: "firstname", name: "firstname"},
-          { data: "countOp", name: "countOp" }
+          { data: "countOp", name: "countOp" },
+          { data: "unit", name: "unit" },
+          { data: "rank", name: "rank" },
+          { data: "sex", name: "sex" }
         ]
   }).ajax.reload();
+}
+
+$(document).ready(function(){
+    $("#editEmpInfo").click(function(){
+        if(data == ""){
+            alertify.error("Дээрхи  хүснэгтээс засахыг хүссэн мөрөө сонгоно уу!!!");
+            return;
+        }
+        $("#txtEditRegister").val(data["RD1"]);
+        $("#hideEditOldRegister").val(data["RD1"]);
+        $("#txtEditLastname").val(data["lastName"]);
+        $("#txtEditFirstname").val(data["firstname"]);
+        $("#cmbEditUnit").val(data["unit"]);
+        $("#txtEditRank").val(data["rank"]);
+        $('#editEmpInfoModal').modal('show');
+    });
+});
+
+$(document).ready(function(){
+    $("#btnEditEmpMissionPost").click(function(e){
+        e.preventDefault();
+        if($("#txtEditRegister").val() == ""){
+            alertify.error("Засах регистрийн дугаараа оруулна уу!!!");
+            return;
+        }
+        if($("#txtEditLastname").val() == ""){
+            alertify.error("Нэрээ оруулна уу!!!");
+            return;
+        }
+        if($("#txtEditFirstname").val() == ""){
+            alertify.error("Овогоо оруулна уу!!!");
+            return;
+        }
+        $.ajax({
+            type: 'post',
+            url: $("#btnEditEmpMissionPost").attr("post-url"),
+            data:{
+                _token: $('meta[name=csrf-token]').attr("content"),
+                rd: $("#txtEditRegister").val(),
+                old_rd: $("#hideEditOldRegister").val(),
+                lastName: $("#txtEditLastname").val(),
+                firstname: $("#txtEditFirstname").val(),
+                unit: $("#cmbEditUnit").val(),
+                rankAlbanTushaal: $("#txtEditRank").val()
+            },
+            success: function(res){
+                if(res.status == "success"){
+                    alertify.alert(res.msg);
+                    search();
+                }
+                else{
+                    alertify.alert(res.msg);
+                }
+            }
+        });
+    });
+});
+
+function getEmpInfo(){
+    $.ajax({
+        type: 'post',
+        url: getEmpByRDUrl,
+        data: {_token: csrf, register:$("#txtNewRegister").val()},
+        success:function(response){
+            if(response.length > 0){
+                alert('angi n ' + response[0].unit);
+                $('#txtEditLastname').val(response[0].lastName);
+                $('#txtEditFirstname').val(response[0].firstname);
+                $("#cmbEditUnit").val(response[0].unit);
+                $('#txtEditRank').val(response[0].rank);
+                $('#editSex').val("0");
+                // $('#txtNewLastname').prop('disabled','disabled');
+                // $('#txtNewFirstname').prop('disabled','disabled');
+                // $("select[name='cmbNewUnit']").prop('disabled','disabled');
+                // $('#txtNewRank').prop('disabled','disabled');
+            }
+            else{
+
+            }
+        }
+    });
 }
