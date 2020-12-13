@@ -107,7 +107,7 @@ function search(){
       "columns": [
           {data: "RD1" , render : function ( data, type, row, meta ) {
               return type === 'display'  ?
-                '<input type="button" class="btn btn-info" onclick=readmoreMisstionByEmp("' + data + '") id="btnReaderMore" value="Дэлгэрэнгүй" />' :
+                '<input type="button" class="btn btn-info" onclick=showReadMoreModal("' + data + '") id="btnReaderMore" value="Дэлгэрэнгүй" />' :
                 data;
             }},
           { data: "RD1", name: "RD1"},
@@ -137,45 +137,6 @@ $(document).ready(function(){
     });
 });
 
-$(document).ready(function(){
-    $("#btnEditEmpMissionPost").click(function(e){
-        e.preventDefault();
-        if($("#txtEditRegister").val() == ""){
-            alertify.error("Засах регистрийн дугаараа оруулна уу!!!");
-            return;
-        }
-        if($("#txtEditLastname").val() == ""){
-            alertify.error("Нэрээ оруулна уу!!!");
-            return;
-        }
-        if($("#txtEditFirstname").val() == ""){
-            alertify.error("Овогоо оруулна уу!!!");
-            return;
-        }
-        $.ajax({
-            type: 'post',
-            url: $("#btnEditEmpMissionPost").attr("post-url"),
-            data:{
-                _token: $('meta[name=csrf-token]').attr("content"),
-                rd: $("#txtEditRegister").val(),
-                old_rd: $("#hideEditOldRegister").val(),
-                lastName: $("#txtEditLastname").val(),
-                firstname: $("#txtEditFirstname").val(),
-                unit: $("#cmbEditUnit").val(),
-                rankAlbanTushaal: $("#txtEditRank").val()
-            },
-            success: function(res){
-                if(res.status == "success"){
-                    alertify.alert(res.msg);
-                    search();
-                }
-                else{
-                    alertify.alert(res.msg);
-                }
-            }
-        });
-    });
-});
 
 function getEmpInfo(){
     $.ajax({

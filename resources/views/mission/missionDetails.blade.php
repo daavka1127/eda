@@ -27,15 +27,22 @@
           <div class="form-group col-xs-10 col-sm-4 col-md-4 col-lg-8">
               <label id="lblAlbanTushaal">Албан тушаал: Программ зохиогч </label>
           </div>
+
           <div class="clearfix"></div>
+          <input type="button" id="btnEditEmpInfo" class="btn btn-warning btn-xs" name="" value="ЦАХ-ийн мэдээлэл засах" data-toggle="collapse" data-target="#collapseEmpInfo" />
+          @include('mission.detailsEmpEditCollapse')
+
+          <div class="clearfix"></div>
+
           <h3><strong>Энхийг сахиулах ажиллагааны мэдээлэл</strong></h3>
           <table id="dtMissionByRD" class="table table-striped table-bordered" style="width:100%;">
             <thead>
               <tr>
                 <th>ID</th>
-                <th>Ажиллагааны улс</th>
+                <th>Улс код</th>
+                <th>Ажиллагааны нэр</th>
                 <th>Ээлж</th>
-                <th>Ажиллагааны цол</th>
+                <th>Цол</th>
                 <th>Ажиллагааны албан тушаал</th>
                 <th>Бүртгэл хийсэн огноо</th>
                 <th>Админ</th>
@@ -44,10 +51,20 @@
           </table>
         </div>
         <div class="clearfix"></div>
+        <input type="button" id="btnOnlyMissionNew" class="btn btn-success btn-xs" name="" value="Энэ ЦАХ-д ажиллагаа нэмэх" data-toggle="collapse" data-target="#collapseMissionNew" />
+        <input type="button" id="btnOnlyMissionEdit" class="btn btn-warning btn-xs" name="" value="Энэ ЦАХ-ийн ажиллагааг засах" />
+        <input type="button" post-url="{{url("delete/mission/only/mission")}}" id="btnOnlyMissionDelete" class="btn btn-danger btn-xs pull-right" name="" value="Устгах" />
+        @include('mission.detailsMissionNewCollapse')
+        @include('mission.detailsMissionEditCollapse')
+
+
+        <div class="clearfix"></div>
         <h4><strong>Шагнал</strong></h4>
-        <table id="dtAwardsByRD" class="table table-striped table-bordered" style="width:100%;">
+        <table post-url="{{url("/readmore/awards/rd")}}" id="dtAwardsByRD" class="table table-striped table-bordered" style="width:100%;">
           <thead>
             <tr>
+              <th>ID</th>
+              <th>Улсын код</th>
               <th>Ажиллагааны улс</th>
               <th>Ээлж</th>
               <th>Шагнал</th>
@@ -56,6 +73,13 @@
             </tr>
           </thead>
         </table>
+        <input type="button" id="btnOnlyAwardsNew" class="btn btn-success btn-xs" name="" value="Энэ ЦАХ-д шагнал нэмэх" data-toggle="collapse" data-target="#collapseAwardsNew" />
+        <input type="button" id="btnOnlyAwardsEdit" class="btn btn-warning btn-xs" name="" value="Энэ ЦАХ-ийн шагнал засах" />
+        <input type="button" post-url="{{url("")}}" id="btnOnlyMissionDelete" class="btn btn-danger btn-xs pull-right" name="" value="Устгах" />
+        @include('mission.detailsAwardsNewCollapse')
+        @include('mission.detailsAwardsEditCollapse')
+        <div class="clearfix"></div>
+
         <h4><strong>Шийтгэл</strong></h4>
         <table id="dtPunishmentsByRD" class="table table-striped table-bordered" style="width:100%;">
           <thead>
@@ -68,8 +92,10 @@
             </tr>
           </thead>
         </table>
+        <div class="clearfix"></div>
+
         <h4><strong>Сургалт дамжаа</strong></h4>
-        <table id="dtTrainingsByRD" class="table table-striped table-bordered" style="width:100%;">
+        <table post-url="{{url("/get/mission/rd")}}" id="dtTrainingsByRD" class="table table-striped table-bordered" style="width:100%;">
             <thead>
                 <tr>
                     <th>Сургалтын төрөл</th>
@@ -93,3 +119,25 @@
   </div>
 </div>
 {{-- END NEW COUNTRY --}}
+
+<style media="screen">
+  #dtMissionByRD tbody tr.selected {
+    color: white;
+    background-color: #4052e8;
+  }
+  #dtMissionByRD tbody tr{
+    cursor: pointer;
+  }
+
+  #dtAwardsByRD tbody tr.selected {
+    color: white;
+    background-color: #4052e8;
+  }
+  #dtAwardsByRD tbody tr{
+    cursor: pointer;
+  }
+</style>
+
+<script type="text/javascript">
+
+</script>

@@ -88,6 +88,81 @@ class missionController extends Controller
         // }
     }
 
+    public function storeOnlyMission(Request $req){
+        try {
+            $mission = new mission;
+            $mission->RD = $req->rd;
+            $mission->country = $req->country;
+            $mission->eelj = $req->eelj;
+            $mission->rank = $req->rank;
+            $mission->operationRank = $req->operationRank;
+            $mission->date = date("Y/m/d h:i:s");
+            $mission->admin = Auth::user()->id;
+            $mission->save();
+
+            $msg = array(
+               'status' => 'success',
+               'id' => $mission->id,
+               'date' => $mission->date,
+               'admin' => $mission->admin,
+               'msg' => 'Амжилттай хадгаллаа!!!'
+            );
+            return $msg;
+        } catch (\Exception $e) {
+            $msg = array(
+               'status' => 'error',
+               'msg' => 'Серверийн алдаа гарлаа. Веб мастерт хандана уу!!!'
+            );
+            return $msg;
+        }
+    }
+
+    public function updateOnlyMission(Request $req){
+        try {
+            $mission = mission::find($req->id);
+            $mission->country = $req->country;
+            $mission->eelj = $req->eelj;
+            $mission->rank = $req->rank;
+            $mission->operationRank = $req->operationRank;
+            $mission->date = date("Y/m/d h:i:s");
+            $mission->admin = Auth::user()->id;
+            $mission->save();
+
+            $msg = array(
+               'status' => 'success',
+               'date' => $mission->date,
+               'admin' => $mission->admin,
+               'msg' => 'Амжилттай хадгаллаа!!!'
+            );
+            return $msg;
+        } catch (\Exception $e) {
+            $msg = array(
+               'status' => 'error',
+               'msg' => 'Серверийн алдаа гарлаа. Веб мастерт хандана уу!!!'
+            );
+            return $msg;
+        }
+    }
+
+    public function deleteOnlyMission(Request $req)
+    {
+        try{
+            $mission = mission::find($req->id);
+            $mission->delete();
+            $msg = array(
+               'status' => 'success',
+               'msg' => 'Амжилттай хадгаллаа!!!'
+            );
+            return $msg;
+        }catch(\Excaption $e){
+            $msg = array(
+               'status' => 'error',
+               'msg' => 'Серверийн алдаа гарлаа. Веб мастерт хандана уу!!!'
+            );
+            return $msg;
+        }
+    }
+
     public function update(Request $req){
         // try{
             $rd = $req->rd;
@@ -200,10 +275,10 @@ class missionController extends Controller
             $mission->admin = Auth::user()->id;
             $mission->save();
 
-             $msg = array(
-                'status' => 'success',
-                'msg' => 'Амжилттай хадгаллаа!!!'
-             );
+            $msg = array(
+              'status' => 'success',
+              'msg' => 'Амжилттай хадгаллаа!!!'
+            );
             return $msg;
         // }catch(\Exception $e){
         //     $msg = array(
@@ -309,6 +384,55 @@ class missionController extends Controller
             );
             return $array;
         }
+    }
+
+    public function changeRD($newRd, $oldRd){
+        $awards = mission::where('RD', $oldRd)->update(['RD'=>$newRd]);
+    }
+
+    public function getAssignedCountry(Request $req){
+        try {
+            $countries = DB::table('tbmission')
+                ->join('tbcountry', 'tbmission.country', '=', 'tbcountry.id')
+                ->select('tbmission.country', 'tbcountry.countryName')
+                ->groupBy('tbmission.country', 'tbcountry.countryName')
+                ->where('tbmission.RD', '=', $req->rd)
+                ->get();
+            $msg = array(
+              'status' => 'success',
+              'msg' => $countries
+            );
+            return $msg;
+        } catch (\Exception $e) {
+            $msg = array(
+               'status' => 'error',
+               'msg' => 'Серверийн алдаа гарлаа. Веб мастерт хандана уу!!!'
+            );
+            return $msg;
+        }
+    }
+
+    public function getAssignedCountryEelj(Request $req){
+        try {
+            $turns = DB::table('tbmission')
+                ->select('tbmission.eelj')
+                ->where('tbmission.RD', '=', $req->rd)
+                ->where('tbmission.country', '=', $req->country)
+                ->groupBy('tbmission.eelj')
+                ->get();
+            $msg = array(
+              'status' => 'success',
+              'msg' => $turns
+            );
+            return $turns;
+        } catch (\Exception $e) {
+            $msg = array(
+               'status' => 'error',
+               'msg' => 'Серверийн алдаа гарлаа. Веб мастерт хандана уу!!!'
+            );
+            return $msg;
+        }
+
     }
 
 

@@ -91,12 +91,18 @@ Route::post('get/emp/nameRd', 'employeeController@getNameRd');
 
 Route::get('/missions', 'missionController@show');
 Route::post('new/mission', 'missionController@store');
+Route::post('new/mission/only/mission', 'missionController@storeOnlyMission');
+Route::post('edit/mission/only/mission', 'missionController@updateOnlyMission');
+Route::post('new/mission/only/mission', 'missionController@storeOnlyMission');
+Route::post('delete/mission/only/mission', 'missionController@deleteOnlyMission');
 Route::post('update/mission', 'missionController@update');
 Route::post('delete/mission', 'missionController@delete');
 Route::post('/get/mission', 'missionController@getEmpMission');
 Route::post('/check/mission', 'missionController@checkMissionEmp');
 Route::post('/get/mission/rd', 'missionController@getMissionByRD');
 Route::post('/delete/all/emp/eelj', 'missionController@deleteEmpByEelj');
+Route::post('/mission/get/assigned/country', 'missionController@getAssignedCountry');
+Route::post('/mission/get/assigned/country/eelj', 'missionController@getAssignedCountryEelj');
 
 
 Route::get('/awards', 'awardsController@show');

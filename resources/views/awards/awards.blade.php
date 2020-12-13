@@ -39,11 +39,9 @@
                     { data: "id", name: "id", "visible":false },
                     { data: "countryName", name: "countryName" },
                     { data: "eelj", name: "eelj" },
-                    { data: "sectorName", name: "sectorName" },
                     { data: "RD", name: "RD" },
                     { data: "lastName", name: "lastName" },
                     { data: "firstname", name: "firstname" },
-                    { data: "rankTypeName", name: "rankTypeName" },
                     { data: "rankName", name: "rankName" },
                     { data: "operationRank", name: "operationRank" },
                     { data: "tailbar", name: "tailbar" },
@@ -82,24 +80,17 @@
     <table id="datatable" class="table table-striped table-bordered" style="width:100%;">
       <thead>
         <tr>
-          <th rowspan="2">ID</th>
-          <th rowspan="2">Ажиллагааны нэр</th>
-          <th rowspan="2">Ээлж</th>
-          <th rowspan="2">РД</th>
-          <th rowspan="2">Овог</th>
-          <th rowspan="2">Салбар</th>
-          <th rowspan="2">Регистрийн дугаар</th>
-          <th rowspan="2">Овог</th>
-          <th rowspan="2">Нэр</th>
-          <th colspan="2">Ажиллагааны</th>
-          <th rowspan="2">Ажиллагааны албан тушаал</th>
-          <th rowspan="2">Шагнал</th>
-          <th rowspan="2">Бүртгэл хийсэн огноо</th>
-          <th rowspan="2">Админ</th>
-        </tr>
-        <tr>
+          <th>ID</th>
+          <th>Ажиллагааны нэр</th>
+          <th>Ээлж</th>
+          <th>РД</th>
+          <th>Овог</th>
+          <th>Нэр</th>
           <th>Цол</th>
-          <th>Цол</th>
+          <th>Ажиллагааны албан тушаал</th>
+          <th>Шагнал</th>
+          <th>Бүртгэл хийсэн огноо</th>
+          <th>Админ</th>
         </tr>
       </thead>
 

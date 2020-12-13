@@ -37,7 +37,7 @@
           "columns": [
             {data: "RD1" , render : function ( data, type, row, meta ) {
                 return type === 'display'  ?
-                  '<input type="button" class="btn btn-info" onclick=readmoreMisstionByEmp("' + data + '") id="btnReaderMore" value="Дэлгэрэнгүй" />' :
+                  '<input type="button" class="btn btn-info" onclick=showReadMoreModal("' + data + '") id="btnReaderMore" value="Дэлгэрэнгүй" />' :
                   data;
               }},
             { data: "RD1", name: "RD1"},
@@ -68,8 +68,6 @@ $(document).ready(function(){
     var getSectionUrl = "{{ url('/get/sectors/combobox') }}";
     var searchUrl = "{{ url('/mission/search1') }}";
     var getEmpByRDUrl = "{{ url('/get/emp/byRD') }}";
-    var getMissionByRD = "{{ url('/get/mission/rd') }}";
-    var getAwardsReadmore = "{{ url('/readmore/awards/rd') }}";
     var getPunishmentsReadmore = "{{ url('/readmore/punishments/rd') }}";
     var getTraningsReadmore = "{{ url('/readmore/training/rd') }}";
     var printReportUrl = "{{url('/report/employee/details')}}" + "/";
@@ -134,15 +132,13 @@ $(document).ready(function(){
 
 </table>
 <div class="clearfix"></div>
-<div class="form-group">
-  <input type="button" class="btn btn-warning" id="editEmpInfo" name="" value="ЦАХ-ийн мэдээлэл засах">
-</div>
 <br>
 <!-- <iframe src="{{url('/public/pdf/showPdf.pdf')}}" style="width: 100%;height: 500px;border: none;"></iframe> -->
-    @include('mission.missionDetails')
+
     @include('missionSearch.empInfoEdit')
-    <script src="{{url('public/js/missionSearch/missionSearch.js')}}"></script>
-    <script src="{{url('public/js/employee/employeeDetails.js')}}"></script>
+    @include('mission.missionDetails')
+
+
 
     <!-- Datatables -->
     <script src="{{ url('public/vendors/datatables.net/js/jquery.dataTables.min.js')}}"></script>
@@ -160,5 +156,8 @@ $(document).ready(function(){
     <script src="{{url('public/vendors/jszip/dist/jszip.min.js')}}"></script>
     <script src="{{url('public/vendors/pdfmake/build/pdfmake.min.js')}}"></script>
     <script src="{{url('public/vendors/pdfmake/build/vfs_fonts.js')}}"></script>
+
+    <script src="{{url('public/js/missionSearch/missionSearch.js')}}"></script>
+    <script src="{{url('public/js/employee/employeeDetails.js')}}"></script>
 
 @endsection

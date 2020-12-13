@@ -6,10 +6,13 @@ use Illuminate\Http\Request;
 use DB;
 use App\employee;
 use App\mission;
+use App\awards;
+use App\punishment;
 use Response;
 use Illuminate\Support\Facades\Input;
 use Yajra\DataTables\DataTables;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\awardsController;
 
 class employeeController extends Controller
 {
@@ -42,8 +45,8 @@ class employeeController extends Controller
     }
 
     public function update(Request $req){
-
-        try{
+        // try{
+            // return 'shine n:' . $req->rd . ' huuchinn :' . $req->old_rd;
             $rd = $req->rd;
             if($req->rd == ''){
                 $msg = array(
@@ -53,87 +56,154 @@ class employeeController extends Controller
                 return $msg;
             }
 
-            $checkedUser = employee::where('RD', '=', $req->rd)->get();
-
-            if(count($checkedUser) == 0){
-                if($req->rd != $req->old_rd){
+            if($req->rd != $req->old_rd){
+                $checkedUser = employee::where('RD', '=', $req->rd)->get();
+                if(count($checkedUser) > 0){
                     $nrd = DB::delete('DELETE FROM tbemployee WHERE RD = "' . $req->old_rd . '"');
+                    $nrd = DB::delete('DELETE FROM tbemployee WHERE RD = "' . $req->rd . '"');
                 }
-                $emp = DB::table('tbemployee')
-                    ->where('RD', '=', $req->old_rd);
-                    $sexNumber = substr($req->rd, 10, 1);
-                    if(($sexNumber%2) == 1){
-                        $sex = "эр";
-                    }
-                    else if(($sexNumber%2) == 0){
-                        $sex = "эм";
-                    }
-                    else{
-                        $sex = "";
-                    }
+                else{
+                    // $nrd = DB::delete('DELETE FROM tbemployee WHERE RD = "' . $req->old_rd . '"');
+                }
+
+                $sexNumber = substr($req->rd, 10, 1);
+                if(($sexNumber%2) == 1){
+                    $sex = "эр";
+                }
+                else if(($sexNumber%2) == 0){
+                    $sex = "эм";
+                }
+                else{
+                    $sex = "";
+                }
                 $emp = new employee;
                 $emp->RD = $req->rd;
                 $emp->lastName = $req->lastName;
                 $emp->firstname = $req->firstname;
-                $sexNumber = substr($req->rd, 10, 1);
-                if(($sexNumber%2) == 1){
-                    $emp->sex = "эр";
-                }
-                else if(($sexNumber%2) == 0){
-                    $emp->sex = "эм";
-                }
-                else{
-                    $emp->sex = "";
-                }
+                $emp->sex = $sex;
                 $emp->unit = $req->unit;
                 $emp->rank = $req->rankAlbanTushaal;
                 $emp->date = date("Y/m/d h:i:s");
                 $emp->admin = Auth::user()->id;
                 $emp->save();
 
-                if($req->rd != $req->old_rd){
-                    $mission = mission::where('RD', '=', $req->old_rd)->update(['RD' => $req->rd]);
-                }
+
+
+                $missions = mission::where('RD', $req->old_rd)->update(['RD'=>$req->rd]);
+                $awards = awards::where('RD', $req->old_rd)->update(['RD'=>$req->rd]);
+                $punishment = punishment::where('RD', $req->old_rd)->update(['RD'=>$req->rd]);
             }
             else{
-                if($req->rd != $req->old_rd){
-                    $nrd = DB::delete('DELETE FROM tbemployee WHERE RD = "' . $req->old_rd . '"');
-                }
-
-                $emp = employee::find($req->rd);
-
-                $emp->RD = $req->rd;
+                $emp = employee::find($req->old_rd);
                 $emp->lastName = $req->lastName;
                 $emp->firstname = $req->firstname;
-                $sexNumber = substr($req->rd, 10, 1);
-                if(($sexNumber%2) == 1){
-                    $emp->sex = "эр";
-                }
-                else if(($sexNumber%2) == 0){
-                    $emp->sex = "эм";
-                }
-                else{
-                    $emp->sex = "";
-                }
                 $emp->unit = $req->unit;
                 $emp->rank = $req->rankAlbanTushaal;
                 $emp->date = date("Y/m/d h:i:s");
                 $emp->admin = Auth::user()->id;
                 $emp->save();
             }
+
+            // $checkedUser = employee::where('RD', '=', $req->rd)->get();
+
+            // if(count($checkedUser) == 0){
+            //     if($req->rd != $req->old_rd){
+            //         $nrd = DB::delete('DELETE FROM tbemployee WHERE RD = "' . $req->old_rd . '"');
+            //
+            //         $emp = new employee;
+            //         $emp->RD = $req->rd;
+            //         $emp->lastName = $req->lastName;
+            //         $emp->firstname = $req->firstname;
+            //         $sexNumber = substr($req->rd, 10, 1);
+            //         if(($sexNumber%2) == 1){
+            //             $emp->sex = "эр";
+            //         }
+            //         else if(($sexNumber%2) == 0){
+            //             $emp->sex = "эм";
+            //         }
+            //         else{
+            //             $emp->sex = "";
+            //         }
+            //         $emp->unit = $req->unit;
+            //         $emp->rank = $req->rankAlbanTushaal;
+            //         $emp->date = date("Y/m/d h:i:s");
+            //         $emp->admin = Auth::user()->id;
+            //         $emp->save();
+            //     }
+            //     $emp = DB::table('tbemployee')
+            //         ->where('RD', '=', $req->old_rd);
+            //         $sexNumber = substr($req->rd, 10, 1);
+            //         if(($sexNumber%2) == 1){
+            //             $sex = "эр";
+            //         }
+            //         else if(($sexNumber%2) == 0){
+            //             $sex = "эм";
+            //         }
+            //         else{
+            //             $sex = "";
+            //         }
+            //     $emp = new employee;
+            //     $emp->RD = $req->rd;
+            //     $emp->lastName = $req->lastName;
+            //     $emp->firstname = $req->firstname;
+            //     $sexNumber = substr($req->rd, 10, 1);
+            //     if(($sexNumber%2) == 1){
+            //         $emp->sex = "эр";
+            //     }
+            //     else if(($sexNumber%2) == 0){
+            //         $emp->sex = "эм";
+            //     }
+            //     else{
+            //         $emp->sex = "";
+            //     }
+            //     $emp->unit = $req->unit;
+            //     $emp->rank = $req->rankAlbanTushaal;
+            //     $emp->date = date("Y/m/d h:i:s");
+            //     $emp->admin = Auth::user()->id;
+            //     $emp->save();
+            //
+            //     if($req->rd != $req->old_rd){
+            //         $mission = mission::where('RD', '=', $req->old_rd)->update(['RD' => $req->rd]);
+            //     }
+            // }
+            // else{
+            //     if($req->rd != $req->old_rd){
+            //         $nrd = DB::delete('DELETE FROM tbemployee WHERE RD = "' . $req->old_rd . '"');
+            //     }
+            //
+            //     $emp = employee::find($req->rd);
+            //
+            //     $emp->lastName = $req->lastName;
+            //     $emp->firstname = $req->firstname;
+            //     $sexNumber = substr($req->rd, 10, 1);
+            //     if(($sexNumber%2) == 1){
+            //         $emp->sex = "эр";
+            //     }
+            //     else if(($sexNumber%2) == 0){
+            //         $emp->sex = "эм";
+            //     }
+            //     else{
+            //         $emp->sex = "";
+            //     }
+            //     $emp->unit = $req->unit;
+            //     $emp->rank = $req->rankAlbanTushaal;
+            //     $emp->date = date("Y/m/d h:i:s");
+            //     $emp->admin = Auth::user()->id;
+            //     $emp->save();
+            // }
 
              $msg = array(
                 'status' => 'success',
                 'msg' => 'Амжилттай хадгаллаа!!!'
              );
             return $msg;
-        }catch(\Exception $e){
-            $msg = array(
-               'status' => 'error',
-               'msg' => 'Серверийн алдаа гарлаа. Веб мастерт хандана уу!!!'
-            );
-            return $msg;
-        }
+        // }catch(\Exception $e){
+        //     $msg = array(
+        //        'status' => 'error',
+        //        'msg' => 'Серверийн алдаа гарлаа. Веб мастерт хандана уу!!!'
+        //     );
+        //     return $msg;
+        // }
     }
 
     public static function updateFromExcel($RD, $lastName, $firstname, $sex, $unit, $rank){

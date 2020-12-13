@@ -37,16 +37,15 @@ class awardsController extends Controller
                 ->on('tbmissionawards.country', '=', 'tbmission.country')
                 ->on('tbmissionawards.eelj', '=', 'tbmission.eelj');
             })
-            ->join('tbsector', 'tbmission.sector', '=', 'tbsector.id')
-            ->join('tbranktype', 'tbmission.rankType', '=', 'tbranktype.rankTypeID')
-            ->join('tbrank', 'tbmission.rank', '=', 'tbrank.rankID')
+            // ->join('tbsector', 'tbmission.sector', '=', 'tbsector.id')
+            // ->join('tbranktype', 'tbmission.rankType', '=', 'tbranktype.rankTypeID')
+            // ->join('tbrank', 'tbmission.rank', '=', 'tbrank.rankID')
             ->join('users', 'tbmissionawards.admin', '=', 'users.id')
-            ->select('tbmissionawards.id', 'tbcountry.countryName', 'tbmissionawards.eelj', 'tbsector.sectorName', 'tbmissionawards.RD', 'tbemployee.lastName',
-                     'tbemployee.firstname', 'tbranktype.TypeName as rankTypeName', 'tbrank.RankName as rankName', 'tbmission.operationRank',
+            ->select('tbmissionawards.id', 'tbcountry.countryName', 'tbmissionawards.eelj', 'tbmissionawards.RD', 'tbemployee.lastName',
+                     'tbemployee.firstname', 'tbmission.rank as rankName', 'tbmission.operationRank',
                      'tbmissionawards.tailbar', 'tbmissionawards.date', 'users.name')
             ->orderby('tbcountry.countryName', 'ASC')
             ->orderby('tbmissionawards.eelj', 'ASC')
-            ->orderby('tbsector.sectorName', 'ASC')
             ->get();
           return DataTables::of($awards)
               ->make(true);
@@ -87,10 +86,14 @@ class awardsController extends Controller
         $awards = DB::table('tbmissionawards')
             ->join('tbcountry', 'tbmissionawards.country', '=', 'tbcountry.id')
             ->join('users', 'tbmissionawards.admin', '=', 'users.id')
-            ->select('tbcountry.countryName', 'tbmissionawards.eelj', 'tbmissionawards.tailbar', 'tbmissionawards.date', 'users.name')
+            ->select('tbmissionawards.id', 'tbmissionawards.country', 'tbcountry.countryName', 'tbmissionawards.eelj', 'tbmissionawards.tailbar', 'tbmissionawards.date', 'users.name')
             ->where('tbmissionawards.RD', '=', $req->rd)
             ->get();
         return DataTables::of($awards)
             ->make(true);
+    }
+
+    public function changeRD($newRd, $oldRd){
+        $awards = awards::where('RD', $oldRd)->update(['RD'=>$newRd]);
     }
 }

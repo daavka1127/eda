@@ -29,19 +29,17 @@ function refresh(){
                   }
              },
       "columns": [
-          { data: "id", name: "id", "visible":false },
-          { data: "countryName", name: "countryName" },
-          { data: "eelj", name: "eelj" },
-          { data: "sectorName", name: "sectorName" },
-          { data: "RD", name: "RD" },
-          { data: "lastName", name: "lastName" },
-          { data: "firstname", name: "firstname" },
-          { data: "rankTypeName", name: "rankTypeName" },
-          { data: "rankName", name: "rankName" },
-          { data: "operationRank", name: "operationRank" },
-          { data: "tailbar", name: "tailbar" },
-          { data: "date", name: "date" },
-          { data: "name", name: "name" }
+        { data: "id", name: "id", "visible":false },
+        { data: "countryName", name: "countryName" },
+        { data: "eelj", name: "eelj" },
+        { data: "RD", name: "RD" },
+        { data: "lastName", name: "lastName" },
+        { data: "firstname", name: "firstname" },
+        { data: "rankName", name: "rankName" },
+        { data: "operationRank", name: "operationRank" },
+        { data: "tailbar", name: "tailbar" },
+        { data: "date", name: "date" },
+        { data: "name", name: "name" }
         ]
   }).ajax.reload();
 }
